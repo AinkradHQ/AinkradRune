@@ -24,7 +24,7 @@ packages:
     # Generation 10: SignalDeepLink.locator and the ainkradPaneLocator
     # environment sink, so a notification from one terminal session focuses
     # THAT pane rather than the first Rune pane on screen.
-    revision: 91ed630a24dc187f8988c104d16a640d3ee7562c
+    revision: 7bb80e9f1d01d468949f6c776dd111c9d6b8d690
 targets:
   # Static library: its objects (and the statically-linked SwiftTerm) fold into
   # whatever links it. AinkradAppKit is dynamic and NEVER embedded — resolved
