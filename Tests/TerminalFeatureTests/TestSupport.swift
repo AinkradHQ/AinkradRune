@@ -126,6 +126,8 @@ final class FakeHostServices: HostServices {
     /// Generation 11. Same documented cost as `signals` at generation 9: a
     /// compiled bundle keeps loading, but this test double needs the member.
     let mode: PluginModeControl = FakeModeControl()
+    /// Generation 11, alongside the overlay-size control.
+    let overlaySize: PluginOverlaySizeControl = FakeOverlaySizeControl()
     /// Generation 9. A no-op is right for a fake: the tests are about Rune, not
     /// about what the host does with an event.
     let signals: PluginSignalEmitter = NoopSignalEmitter()
@@ -151,5 +153,12 @@ final class FakeHostServices: HostServices {
 struct FakeModeControl: PluginModeControl {
     var current: PluginMode { .advanced }
     func set(_ mode: PluginMode) {}
+    func reset() {}
+}
+
+@MainActor
+struct FakeOverlaySizeControl: PluginOverlaySizeControl {
+    var current: PluginOverlaySize { .medium }
+    func set(_ size: PluginOverlaySize) {}
     func reset() {}
 }
