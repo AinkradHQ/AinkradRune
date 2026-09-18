@@ -46,6 +46,39 @@ struct RuneBasicModeTests {
         #expect(!host.actionRegistry.registered.isEmpty)
     }
 
+    @Test("Basic mode resolves the SAME shell and directory a session would")
+    func basicUsesTheRealResolution() {
+        // The bug this guards, which shipped once: basic mode hand-rolled
+        // `environment["SHELL"] ?? "/bin/zsh"`, so a configured shell and a
+        // configured working directory were both ignored and the /etc/shells
+        // validation was skipped. Commands ran somewhere the user had not
+        // chosen, under a shell they had not picked.
+        let directory = FileManager.default.temporaryDirectory
+        var settings = TerminalSettings()
+        settings.defaultShell = "/bin/bash"
+        settings.defaultWorkingDirectory = directory
+
+        let resolved = TerminalSessionFactory(settings: settings).resolve()
+
+        #expect(resolved.shellPath == "/bin/bash",
+                "the configured shell must be honoured, not overridden by $SHELL")
+        #expect(resolved.workingDirectory.standardizedFileURL == directory.standardizedFileURL,
+                "the configured working directory must be honoured, not replaced with home")
+    }
+
+    @Test("An invalid configured shell falls back and SAYS so")
+    func invalidShellIsReported() {
+        // Silently substituting a shell is how a basic-mode command runs under
+        // something the user did not pick with nothing on screen to explain it.
+        var settings = TerminalSettings()
+        settings.defaultShell = "/not/a/shell"
+        let resolved = TerminalSessionFactory(settings: settings).resolve()
+
+        #expect(resolved.shellPath != "/not/a/shell")
+        #expect(resolved.notices.isEmpty == false,
+                "a rejected shell must produce a notice, not a silent substitution")
+    }
+
     @Test("The mode-less entry point still means advanced")
     func legacyEntryPointMeansAdvanced() {
         let host = BasicModeHost()
@@ -81,10 +114,25 @@ private final class RecordingActions: AgentActionProvider {
 
 @MainActor
 private final class BasicModeHost: HostServices {
+    /// Every instance is retained for the life of the test process, for the
+    /// reason `FakeHostServices` already documents: `TerminalRuntime` keys its
+    /// per-host registries by `ObjectIdentifier(host)` and never evicts them.
+    /// A short-lived host that deallocates can have its ADDRESS REUSED by a
+    /// later test, which then collides with the stale entry and defeats
+    /// register-once — so `registerActions` silently does nothing and the
+    /// assertion fails in whichever test happened to allocate second.
+    ///
+    /// Found the hard way: this double omitted the retention, and adding two
+    /// unrelated tests was enough to change the allocation pattern and break a
+    /// test that had been passing.
+    nonisolated(unsafe) static var liveInstances: [BasicModeHost] = []
+
     let documents: PluginDocumentStore = MemoryDocs()
     let secrets: PluginSecretStore = MemorySecrets()
     let launcher = RecordingLauncher()
     let actionRegistry = RecordingActions()
+
+    init() { BasicModeHost.liveInstances.append(self) }
 
     var theme: HostTheme {
         HostTheme(.init(themeID: "t", background: .black, surface: .black,
