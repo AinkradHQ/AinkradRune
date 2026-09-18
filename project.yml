@@ -27,7 +27,8 @@ packages:
     # c315110: generation 11 -- Basic Mode. NOT releasable until an installed
     # host is generation 11.
     # 43868c9: AinkradSurfaceSettings -- the shared Open as / Open in rows.
-    revision: 43868c968b8c4111f7cfa7d05fd903fcc9277d63
+    # c465461: AinkradLaunchIntent -- the shared "open this there" payload.
+    revision: c4654613bf10a98fe5cb5ab1ef0eeafb923e5e2d
 targets:
   # Static library: its objects (and the statically-linked SwiftTerm) fold into
   # whatever links it. AinkradAppKit is dynamic and NEVER embedded — resolved

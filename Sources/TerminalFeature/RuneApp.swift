@@ -20,7 +20,7 @@ public struct RuneApp: AinkradApp {
             contextBridge: TerminalRuntime.contextBridge(for: host),
             reporter: RuneSignalReporter(signals: host.signals),
             theme: host.theme,
-            takeLaunch: { SSHLaunchPayload.pending(from: host.apps.takePendingLaunch()) }
+            takeLaunch: { RuneLaunch.decode(host.apps.takePendingLaunch()) }
         ))
     }
 
