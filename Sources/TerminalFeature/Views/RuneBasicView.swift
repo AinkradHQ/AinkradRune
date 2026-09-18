@@ -14,11 +14,15 @@ import AinkradAppKit
 /// exists to report on, and it is the reason opening Rune to run one command
 /// costs far more than the command.
 ///
-/// Basic runs the command directly under `$SHELL -c`, with no PTY and no
-/// interactive startup. Which also means: **no aliases, no shell functions, no
-/// rc-file `PATH` edits.** That is a real behavioural difference, not a
-/// simplification to paper over, so it is stated in the placeholder rather than
-/// discovered when something works in advanced and not here.
+/// Basic runs the command under the same shell a session would use — resolved
+/// by `TerminalSessionFactory.resolve()`, so the configured shell and working
+/// directory are honoured and the shell is validated against `/etc/shells` —
+/// but with `-c`, so no PTY and no interactive startup.
+///
+/// Which also means: **no aliases, no shell functions, no rc-file `PATH`
+/// edits.** That is a real behavioural difference, not a simplification to
+/// paper over, so it is stated in the placeholder rather than discovered when
+/// something works in advanced and not here.
 struct RuneBasicView: View {
     let settingsStore: TerminalSettingsStore
     let theme: HostTheme
@@ -41,7 +45,7 @@ struct RuneBasicView: View {
         } content: {
             VStack(spacing: AinkradSpacing.sm) {
                 AinkradTextField(text: $command,
-                                 placeholder: "Command — runs without your shell's startup files")
+                                 placeholder: "Command — your shell, without its startup files")
                     .onSubmit { run() }
                     .disabled(isRunning)
                 AinkradLogView(lines: buffer.all,
@@ -67,15 +71,27 @@ struct RuneBasicView: View {
         isRunning = true
         lastExitCode = nil
 
+        // The SAME resolution a session uses: the configured shell validated
+        // against /etc/shells, then $SHELL, then the account shell, then
+        // /bin/zsh — and the configured working directory.
+        //
+        // This was hand-rolled as `environment["SHELL"] ?? "/bin/zsh"` in the
+        // first version, which ignored BOTH settings and skipped the
+        // /etc/shells check. Rune already had `ShellResolver` and
+        // `WorkingDirectoryResolver`; reaching past them meant basic mode ran
+        // somewhere other than where the user said, under a shell they had not
+        // chosen.
+        let resolved = TerminalSessionFactory(settings: settingsStore.settings).resolve()
+        for notice in resolved.notices {
+            buffer.append(notice + "\n", stream: .stderr)
+        }
+
         let process = Process()
-        // `$SHELL -c` rather than /bin/sh: the user's chosen shell is what they
-        // mean by "a command", and its non-interactive mode still reads nothing
-        // from the interactive rc files.
-        process.executableURL = URL(fileURLWithPath:
-            ProcessInfo.processInfo.environment["SHELL"] ?? "/bin/zsh")
+        // `-c` runs it non-interactively, so the shell still reads none of the
+        // interactive rc files.
+        process.executableURL = URL(fileURLWithPath: resolved.shellPath)
         process.arguments = ["-c", trimmed]
-        process.currentDirectoryURL = URL(fileURLWithPath:
-            FileManager.default.homeDirectoryForCurrentUser.path)
+        process.currentDirectoryURL = resolved.workingDirectory
 
         let out = Pipe()
         let err = Pipe()
