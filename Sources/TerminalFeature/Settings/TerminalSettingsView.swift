@@ -11,6 +11,8 @@ import AinkradAppKit
 struct TerminalSettingsView: View {
     let settingsStore: TerminalSettingsStore
     let theme: HostTheme
+    let presentation: any PluginPresentationControl
+    let modeControl: any PluginModeControl
 
     @State private var shellPathText = ""
     @State private var shellValidationMessage: String?
@@ -29,6 +31,7 @@ struct TerminalSettingsView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
+                surfaceSection
                 appearanceSection(tokens: tokens)
                 behaviorSection(tokens: tokens)
             }
@@ -37,6 +40,18 @@ struct TerminalSettingsView: View {
         .environment(\.ainkradTheme, tokens)
         .scrollContentBackground(.hidden)
         .onAppear(perform: loadIfNeeded)
+    }
+
+    /// How the host surfaces Rune. First, above appearance: it decides what you
+    /// get when you open the app -- a full session in a pane, or one command in
+    /// an overlay -- which matters before what the terminal looks like.
+    private var surfaceSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            AinkradSectionHeader(title: "SURFACE")
+            AinkradSurfaceSettings(appName: "Rune",
+                                   presentation: presentation,
+                                   mode: modeControl)
+        }
     }
 
     /// Uses `NSOpenPanel` rather than SwiftUI's `.fileImporter`.
