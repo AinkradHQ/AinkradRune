@@ -27,7 +27,9 @@ public struct RuneApp: AinkradApp {
     public static func makeSettingsView(host: HostServices) -> AnyView {
         AnyView(TerminalSettingsView(
             settingsStore: TerminalRuntime.settingsStore(for: host),
-            theme: host.theme
+            theme: host.theme,
+            presentation: host.presentation,
+            modeControl: host.mode
         ))
     }
 
