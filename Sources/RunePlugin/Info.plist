@@ -10,6 +10,10 @@
     <key>CFBundleExecutable</key><string>RunePlugin</string>
     <key>CFBundlePackageType</key><string>BNDL</string>
     <key>NSPrincipalClass</key><string>RuneEntryPoint</string>
+    <!-- Overlay + basic: the "quick command on the run" case is a transient
+         surface, not a pane to keep around. Advanced is still a full session. -->
+    <key>AinkradPresentation</key><string>overlay</string>
+    <key>AinkradMode</key><string>basic</string>
     <key>AinkradAppID</key><string>rune</string>
     <key>AinkradDisplayName</key><string>Rune</string>
     <key>AinkradIconSymbol</key><string>terminal</string>

@@ -10,6 +10,10 @@ public struct RuneApp: AinkradApp {
     public static let icon = "terminal"
 
     public static func makeRootView(host: HostServices) -> AnyView {
+        makeRootView(host: host, mode: .advanced)
+    }
+
+    private static func advancedRootView(host: HostServices) -> AnyView {
         TerminalRuntime.registerActions(for: host)
         return AnyView(TerminalBlockRootView(
             settingsStore: TerminalRuntime.settingsStore(for: host),
@@ -57,5 +61,28 @@ extension RuneApp: AinkradAppMCP {
 extension RuneApp: AinkradAppTeardown {
     public static func teardown(instance: PluginInstanceID) {
         TerminalRuntime.teardown(instance: instance, host: nil)
+    }
+}
+
+/// Generation 11: Rune's basic mode runs ONE command without an interactive
+/// shell — the "quick command on the run" case, where opening a session costs
+/// more than the command does.
+extension RuneApp: AinkradAppModes {
+    public static func makeRootView(host: HostServices, mode: PluginMode) -> AnyView {
+        switch mode {
+        case .basic:
+            // Actions are NOT registered here. They drive the live terminal
+            // session, and basic mode has none — registering them would publish
+            // an agent action whose target does not exist.
+            return AnyView(RuneBasicView(
+                settingsStore: TerminalRuntime.settingsStore(for: host),
+                theme: host.theme))
+        case .advanced:
+            return advancedRootView(host: host)
+        // Resilient enum: fall back to advanced, never to a stripped view for a
+        // mode this build does not understand.
+        @unknown default:
+            return advancedRootView(host: host)
+        }
     }
 }
