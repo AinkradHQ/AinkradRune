@@ -36,6 +36,12 @@ enum TerminalRuntime {
     }
     private static var legacyIDs: [ObjectIdentifier: PluginInstanceID] = [:]
 
+    private static let pageStates = PluginInstanceStorage<TerminalSettingsPageState>()
+
+    static func settingsPageState(for host: HostServices) -> TerminalSettingsPageState {
+        pageStates.value(for: instance(of: host)) { TerminalSettingsPageState() }
+    }
+
     static func settingsStore(for host: HostServices) -> TerminalSettingsStore {
         stores.value(for: instance(of: host)) { TerminalSettingsStore(documents: host.documents) }
     }
@@ -97,6 +103,7 @@ enum TerminalRuntime {
     /// `terminal.echo` handler live for the rest of the process.
     static func teardown(instance: PluginInstanceID, host: HostServices?) {
         stores.remove(instance)
+        pageStates.remove(instance)
         bridges.remove(instance)
         // The server's resource providers capture the bridge — leaving it
         // registered would keep a closed instance's bridge alive and let the

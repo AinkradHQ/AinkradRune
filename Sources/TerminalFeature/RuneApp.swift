@@ -24,6 +24,11 @@ public struct RuneApp: AinkradApp {
         ))
     }
 
+    public static func settingsCatalog(host: HostServices) -> SettingsPage? {
+        TerminalSettingsCatalog.page(store: TerminalRuntime.settingsStore(for: host),
+                                     state: TerminalRuntime.settingsPageState(for: host), theme: host.theme)
+    }
+
     public static func makeSettingsView(host: HostServices) -> AnyView {
         AnyView(TerminalSettingsView(
             settingsStore: TerminalRuntime.settingsStore(for: host),
