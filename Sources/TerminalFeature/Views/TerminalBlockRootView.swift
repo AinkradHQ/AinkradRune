@@ -10,7 +10,12 @@ struct TerminalBlockRootView: View {
     let contextBridge: TerminalContextBridge
     let reporter: RuneSignalReporter
     let theme: HostTheme
-    let takeLaunch: () -> SSHLaunch?
+    /// Classifies the pending payload BEFORE decoding it as anything.
+    ///
+    /// Typed as `RuneLaunch?` rather than `SSHLaunch?` because
+    /// `takePendingLaunch()` consumes: a seam that could only express one kind
+    /// did not ignore the others, it ate them.
+    let takeLaunch: () -> RuneLaunch?
     /// Where this pane says which session it is holding, so a notification
     /// from that session focuses THIS pane and not whichever Rune pane happens
     /// to be first. Generation 10; the host's default sink discards, so this
@@ -41,8 +46,11 @@ struct TerminalBlockRootView: View {
         .onAppear {
             guard session == nil else { return }
             let launch = takeLaunch()
+            // Only an SSH launch changes how the session STARTS. A document
+            // intent is recognised (so it is not silently eaten) but does not
+            // alter the shell — Rune does not render markdown, Lore does.
             let created = TerminalSessionFactory(settings: settingsStore.settings)
-                .makeSession(launch: launch)
+                .makeSession(launch: launch?.sshPayload)
             session = created
             // Reported as soon as the session exists, and BEFORE any
             // notification it could produce: an agent that asks for attention
