@@ -12,6 +12,9 @@ public enum TerminalFonts {
         for url in bundle.urls(forResourcesWithExtension: "ttf", subdirectory: nil) ?? [] {
             CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
         }
+        // After registering, so the bundled fonts are in the list. Settings'
+        // first open then finds it ready instead of probing every font.
+        Task { @MainActor in MonospacedFonts.warm() }
     }
     private final class BundleToken {}
 }
