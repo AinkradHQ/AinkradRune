@@ -10,16 +10,15 @@ import AinkradAppKit
 final class TerminalSettingsStore {
     private(set) var settings: TerminalSettings
     private let documents: PluginDocumentStore
+    private var canSave = true
     private static let key = TerminalSettings.documentID
 
     init(documents: PluginDocumentStore) {
         self.documents = documents
-        if let data = documents.data(forKey: Self.key),
-           let decoded = try? JSONDecoder().decode(TerminalSettings.self, from: data) {
-            self.settings = decoded
-        } else {
-            self.settings = TerminalSettings()
-        }
+        let loaded = loadDocument(
+            TerminalSettings.self, key: Self.key, from: documents, app: "rune")
+        self.settings = loaded.value ?? TerminalSettings()
+        self.canSave = loaded.canSave
     }
 
     /// Mutates the settings, publishes to observers, and persists immediately.
@@ -27,8 +26,16 @@ final class TerminalSettingsStore {
         var updated = settings
         mutate(&updated)
         settings = updated
-        if let data = try? JSONEncoder().encode(updated) {
-            documents.setData(data, forKey: Self.key)
+        guard canSave else {
+            AinkradLog.logger(app: "rune", area: "persistence")
+                .error("saving is off: the loaded document did not decode and could not be set aside")
+            return
         }
+        guard let data = try? JSONEncoder().encode(updated) else {
+            AinkradLog.logger(app: "rune", area: "persistence")
+                .error("could not encode terminal settings; not saving")
+            return
+        }
+        documents.setData(data, forKey: Self.key)
     }
 }
