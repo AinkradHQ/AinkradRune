@@ -1,3 +1,4 @@
+// design-lint: allow-file hex-color terminal palette data until Epic 3's terminal group
 import SwiftUI
 import AppKit
 

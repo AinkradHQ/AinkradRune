@@ -46,7 +46,7 @@ public struct RuneApp: AinkradApp {
             settings: TerminalRuntime.settingsStore(for: host).settings,
             tokens: host.theme.tokens
         )
-        return Color(hex: appearance.background).opacity(appearance.backgroundOpacity)
+        return Color(hex: appearance.background).opacity(appearance.backgroundOpacity) // design-lint: allow hex-color user-chosen terminal colour (settings data)
     }
 }
 

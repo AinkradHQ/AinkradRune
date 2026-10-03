@@ -100,7 +100,7 @@ enum TerminalSettingsCatalog {
             help: override == nil ? "From the color scheme." : "Custom.",
             keywords: ["colour", "color", label.lowercased()],
             kind: .action(title: "#" + (override ?? resolvedHex).uppercased().trimmingCharacters(in: ["#"])) {
-                ColorPanelBridge.shared.edit(Color(hex: override ?? resolvedHex)) { picked in
+                ColorPanelBridge.shared.edit(Color(hex: override ?? resolvedHex)) { picked in // design-lint: allow hex-color user-chosen terminal colour (settings data)
                     store.update { $0[keyPath: key] = picked.hexString }
                 }
             },
