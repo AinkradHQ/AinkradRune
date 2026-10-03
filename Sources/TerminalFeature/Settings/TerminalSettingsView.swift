@@ -189,7 +189,7 @@ struct TerminalSettingsView: View {
             HStack(spacing: 8) {
                 AinkradColorPicker(
                     selection: Binding(
-                        get: { Color(hex: override ?? resolvedHex) },
+                        get: { Color(hex: override ?? resolvedHex) }, // design-lint: allow hex-color user-chosen terminal colour (settings data)
                         set: { set($0.hexString) }
                     )
                 )
@@ -217,14 +217,14 @@ struct TerminalSettingsView: View {
             VStack(alignment: .leading, spacing: 8) {
                 // Miniature terminal preview.
                 ChamferShape(cut: AinkradRadius.sm)
-                    .fill(Color(hex: preview.background))
+                    .fill(Color(hex: preview.background)) // design-lint: allow hex-color user-chosen terminal colour (settings data)
                     .frame(height: 40)
                     .overlay(
                         HStack(spacing: 3) {
                             Text(">")
-                                .foregroundStyle(Color(hex: preview.cursor))
+                                .foregroundStyle(Color(hex: preview.cursor)) // design-lint: allow hex-color user-chosen terminal colour (settings data)
                             Text("ainkrad")
-                                .foregroundStyle(Color(hex: preview.foreground))
+                                .foregroundStyle(Color(hex: preview.foreground)) // design-lint: allow hex-color user-chosen terminal colour (settings data)
                         }
                         .font(AinkradFont.mono(10))
                         .padding(.horizontal, 8),
@@ -334,7 +334,7 @@ struct TerminalSettingsView: View {
                 if let shellValidationMessage {
                     Text(shellValidationMessage)
                         .font(AinkradFont.display(11))
-                        .foregroundStyle(Color(hex: "E5484D"))
+                        .foregroundStyle(Color(hex: "E5484D")) // design-lint: allow hex-color user-chosen terminal colour (settings data)
                 } else {
                     Text("Must be listed in /etc/shells. Leave empty to use the login shell.")
                         .font(AinkradFont.display(11))
