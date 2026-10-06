@@ -213,12 +213,12 @@ struct TerminalContainerView: NSViewRepresentable {
     static func terminalColor(hex: String) -> SwiftTerm.Color? {  // design-lint: allow hex-color user-chosen terminal colour (settings data)
         guard let c = rgb(hex: hex) else { return nil }
         // SwiftTerm.Color components are 16-bit; scale 8-bit up by 257.
-        return SwiftTerm.Color(red: UInt16(c.r) * 257, green: UInt16(c.g) * 257, blue: UInt16(c.b) * 257)
+        return SwiftTerm.Color(red: UInt16(c.r) * 257, green: UInt16(c.g) * 257, blue: UInt16(c.b) * 257)  // design-lint: allow raw-color SwiftTerm ANSI install of terminal scheme hex; Match Theme rows are contract-gap HostTheme.terminal
     }
 
     private static func font(family: String, size: Double) -> NSFont {
         NSFont(name: family, size: CGFloat(size))
-            ?? NSFont.monospacedSystemFont(ofSize: CGFloat(size), weight: .regular)
+            ?? NSFont.monospacedSystemFont(ofSize: CGFloat(size), weight: .regular)  // design-lint: allow font-size terminal render fallback
     }
 
     static func dismantleNSView(_ nsView: AinkradTerminalView, coordinator: Coordinator) {

@@ -65,30 +65,11 @@ struct TerminalBlockRootView: View {
         }
     }
 
+    /// One kit banner for every startup notice; dismissing hides it for the
+    /// life of this block (the feed keeps the notices).
     private func noticeBanner(_ notices: [String]) -> some View {
-        let tokens = theme.tokens
-        return HStack(alignment: .top, spacing: 8) {
-            Image(systemName: "info.circle")
-                .foregroundStyle(tokens.accentSecondary)
-            VStack(alignment: .leading, spacing: 2) {
-                ForEach(notices, id: \.self) { notice in
-                    Text(notice)
-                        .font(.system(size: 11))
-                        .foregroundStyle(tokens.foreground.opacity(0.85))
-                }
-            }
-            Spacer()
-            Button {
-                isNoticeDismissed = true
-            } label: {
-                Image(systemName: "xmark")
-                    .font(.system(size: 9, weight: .semibold))
-                    .foregroundStyle(tokens.foreground.opacity(0.5))
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(tokens.surfaceElevated)
+        AinkradBanner(
+            message: notices.joined(separator: "\n"), status: .warning,
+            onDismiss: { isNoticeDismissed = true })
     }
 }
