@@ -31,15 +31,9 @@ public struct RuneApp: AinkradApp {
             state: TerminalRuntime.settingsPageState(for: host), theme: host.theme)
     }
 
-    public static func makeSettingsView(host: HostServices) -> AnyView {
-        AnyView(
-            TerminalSettingsView(
-                settingsStore: TerminalRuntime.settingsStore(for: host),
-                theme: host.theme,
-                presentation: host.presentation,
-                modeControl: host.mode
-            ))
-    }
+    /// Empty: the host draws Rune's settings from `settingsCatalog`, and
+    /// only falls back to this view when there is no catalog.
+    public static func makeSettingsView(host: HostServices) -> AnyView { AnyView(EmptyView()) }
 
     /// The header matches the terminal window: the resolved scheme background at
     /// the configured transparency, so the title bar reads as one continuous

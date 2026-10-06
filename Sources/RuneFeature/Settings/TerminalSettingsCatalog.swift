@@ -4,8 +4,7 @@ import SwiftUI
 
 /// Rune's settings as DECLARED fields, so the host draws them in the shared
 /// settings style. The "Appearance" group is merged by the host into its one
-/// Appearance tab (after Open as / Open in, before Blur). `TerminalSettingsView`
-/// stays as the page for hosts that predate this.
+/// Appearance tab (after Open as / Open in, before Blur).
 @MainActor
 enum TerminalSettingsCatalog {
     static func page(
