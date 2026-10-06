@@ -133,7 +133,7 @@ private final class BasicModeHost: HostServices {
     /// Found the hard way: this double omitted the retention, and adding two
     /// unrelated tests was enough to change the allocation pattern and break a
     /// test that had been passing.
-    nonisolated(unsafe) static var liveInstances: [BasicModeHost] = []
+    static var liveInstances: [BasicModeHost] = []
 
     let documents: PluginDocumentStore = MemoryDocs()
     let secrets: PluginSecretStore = MemorySecrets()
