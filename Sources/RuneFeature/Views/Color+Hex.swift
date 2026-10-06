@@ -8,7 +8,7 @@ extension Color {
     /// header and the terminal never disagree; malformed input is black.
     init(hex: String) {
         let c = TerminalContainerView.rgb(hex: hex) ?? (0, 0, 0)
-        self = Color(red: Double(c.r) / 255, green: Double(c.g) / 255, blue: Double(c.b) / 255)
+        self = Color(red: Double(c.r) / 255, green: Double(c.g) / 255, blue: Double(c.b) / 255)  // design-lint: allow raw-color decodes terminal scheme/override hex (settings data); Match Theme rows are contract-gap HostTheme.terminal
     }
 
     /// The color as an uppercase 6-digit RRGGBB hex string (no `#`), or nil if

@@ -250,6 +250,6 @@ final class ColorPanelBridge: NSObject {
     }
 
     @objc private func changed(_ sender: NSColorPanel) {
-        onChange?(Color(nsColor: sender.color))
+        onChange?(Color(nsColor: sender.color))  // design-lint: allow raw-color user-picked override from the system colour panel (settings data)
     }
 }
