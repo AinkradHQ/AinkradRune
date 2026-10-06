@@ -1,6 +1,6 @@
 import AinkradAppKit
 import Foundation
-import TerminalFeature
+import RuneFeature
 
 /// The bundle's `NSPrincipalClass`. `@objc` + explicit name so the Info.plist
 /// resolves it after `Bundle.load()`. Registers the plugin's bundled fonts,
