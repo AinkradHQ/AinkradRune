@@ -118,7 +118,7 @@ private final class FakePresentationControl: PluginPresentationControl {
 /// A minimal reference-type `HostServices` for registration tests. Only
 /// `context` carries behavior; the rest are inert doubles. Reference type so
 /// `ObjectIdentifier(host as AnyObject)` gives it stable identity (matching how
-/// `TerminalRuntime` keys per host).
+/// `RuneRuntime` keys per host).
 @MainActor
 final class FakeHostServices: HostServices {
     let documents: PluginDocumentStore = FakeDocs()
@@ -138,7 +138,7 @@ final class FakeHostServices: HostServices {
     let context: PluginContextRegistry
     let actions: AgentActionProvider
 
-    /// Keeps every fake host alive for the whole test process. `TerminalRuntime`
+    /// Keeps every fake host alive for the whole test process. `RuneRuntime`
     /// keys its per-host `bridges` map by `ObjectIdentifier(host)` (address-based)
     /// and never removes entries — mirroring the production `stores` pattern. If a
     /// short-lived fake host deallocated, its address could be reused by a later

@@ -123,7 +123,7 @@ private final class RecordingActions: AgentActionProvider {
 @MainActor
 private final class BasicModeHost: HostServices {
     /// Every instance is retained for the life of the test process, for the
-    /// reason `FakeHostServices` already documents: `TerminalRuntime` keys its
+    /// reason `FakeHostServices` already documents: `RuneRuntime` keys its
     /// per-host registries by `ObjectIdentifier(host)` and never evicts them.
     /// A short-lived host that deallocates can have its ADDRESS REUSED by a
     /// later test, which then collides with the stale entry and defeats

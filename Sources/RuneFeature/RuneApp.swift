@@ -14,11 +14,11 @@ public struct RuneApp: AinkradApp {
     }
 
     private static func advancedRootView(host: HostServices) -> AnyView {
-        TerminalRuntime.registerActions(for: host)
+        RuneRuntime.registerActions(for: host)
         return AnyView(
             TerminalBlockRootView(
-                settingsStore: TerminalRuntime.settingsStore(for: host),
-                contextBridge: TerminalRuntime.contextBridge(for: host),
+                settingsStore: RuneRuntime.settingsStore(for: host),
+                contextBridge: RuneRuntime.contextBridge(for: host),
                 reporter: RuneSignalReporter(signals: host.signals),
                 theme: host.theme,
                 takeLaunch: { RuneLaunch.decode(host.apps.takePendingLaunch()) }
@@ -27,8 +27,8 @@ public struct RuneApp: AinkradApp {
 
     public static func settingsCatalog(host: HostServices) -> SettingsPage? {
         TerminalSettingsCatalog.page(
-            store: TerminalRuntime.settingsStore(for: host),
-            state: TerminalRuntime.settingsPageState(for: host), theme: host.theme)
+            store: RuneRuntime.settingsStore(for: host),
+            state: RuneRuntime.settingsPageState(for: host), theme: host.theme)
     }
 
     /// Empty: the host draws Rune's settings from `settingsCatalog`, and
@@ -40,7 +40,7 @@ public struct RuneApp: AinkradApp {
     /// surface with the terminal below.
     public static func chromeFill(host: HostServices) -> Color? {
         let appearance = TerminalAppearanceResolver.resolve(
-            settings: TerminalRuntime.settingsStore(for: host).settings,
+            settings: RuneRuntime.settingsStore(for: host).settings,
             tokens: host.theme.tokens
         )
         return Color(hex: appearance.background).opacity(appearance.backgroundOpacity)  // design-lint: allow hex-color user-chosen terminal colour (settings data)
@@ -52,19 +52,19 @@ public struct RuneApp: AinkradApp {
 /// resources read the same bridge the visible terminal registers with.
 extension RuneApp: AinkradAppMCP {
     public static func makeMCPServer(host: HostServices) -> MCPAppServer {
-        TerminalRuntime.mcpServer(for: host)
+        RuneRuntime.mcpServer(for: host)
     }
 }
 
 /// Generation 8: release this instance when the host closes it.
 ///
-/// `TerminalRuntime` held four static, never-evicted registries — settings
+/// `RuneRuntime` held four static, never-evicted registries — settings
 /// store, context bridge, its registration token, and the `terminal.echo`
 /// action token. Closing Terminal left all of them live for the rest of the
 /// process, including a context source the agent kept consulting.
 extension RuneApp: AinkradAppTeardown {
     public static func teardown(instance: PluginInstanceID) {
-        TerminalRuntime.teardown(instance: instance, host: nil)
+        RuneRuntime.teardown(instance: instance, host: nil)
     }
 }
 
@@ -80,7 +80,7 @@ extension RuneApp: AinkradAppModes {
             // an agent action whose target does not exist.
             return AnyView(
                 RuneBasicView(
-                    settingsStore: TerminalRuntime.settingsStore(for: host),
+                    settingsStore: RuneRuntime.settingsStore(for: host),
                     theme: host.theme))
         case .advanced:
             return advancedRootView(host: host)

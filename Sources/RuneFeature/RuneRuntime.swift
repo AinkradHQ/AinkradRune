@@ -8,7 +8,7 @@ import Foundation
 /// running terminals live. Keyed by host object identity (the host is always a
 /// reference type — `HostServicesImpl`).
 @MainActor
-enum TerminalRuntime {
+enum RuneRuntime {
     private static let stores = PluginInstanceStorage<TerminalSettingsStore>()
     private static let bridges = PluginInstanceStorage<TerminalContextBridge>()
     private static let contextTokens = PluginInstanceStorage<PluginContextToken>()

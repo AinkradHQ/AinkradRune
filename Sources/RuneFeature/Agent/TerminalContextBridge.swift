@@ -17,7 +17,7 @@ protocol TerminalBufferSource: AnyObject {
 }
 
 /// Per-host bridge that publishes the active terminal's buffer as read-only
-/// agent context. Registered once per host by `TerminalRuntime`; holds a weak
+/// agent context. Registered once per host by `RuneRuntime`; holds a weak
 /// reference to the currently-live terminal view and reads it on demand. Returns
 /// nil when no view is active or the buffer is empty — so a torn-down view (weak
 /// ref gone) simply produces no context, with no teardown call needed.
