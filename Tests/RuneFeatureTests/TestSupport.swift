@@ -1,7 +1,7 @@
 import AinkradAppKit
 import Foundation
 
-@testable import TerminalFeature
+@testable import RuneFeature
 
 /// Builds a `HostThemeTokens` snapshot with the given theme id. Match-Theme
 /// resolution reads only `tokens.themeID`, so the color values are irrelevant

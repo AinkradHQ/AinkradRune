@@ -1,7 +1,7 @@
 import Foundation
 import Testing
 
-@testable import TerminalFeature
+@testable import RuneFeature
 
 private struct SpyShellResolver: ShellResolving {
     var onResolve: (String?) throws -> String

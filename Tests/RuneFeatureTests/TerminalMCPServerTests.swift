@@ -2,7 +2,7 @@ import AinkradAppKit
 import Foundation
 import Testing
 
-@testable import TerminalFeature
+@testable import RuneFeature
 
 /// Covers Terminal's resources-only MCP surface. Every test drives the real
 /// `MCPAppServer` over JSON-RPC rather than calling the providers directly, so

@@ -2,7 +2,7 @@ import AinkradAppKit
 import Foundation
 import Testing
 
-@testable import TerminalFeature
+@testable import RuneFeature
 
 @Suite("TerminalContextBridge")
 @MainActor

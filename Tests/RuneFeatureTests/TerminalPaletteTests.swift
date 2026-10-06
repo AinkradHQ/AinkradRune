@@ -1,6 +1,6 @@
 import Testing
 
-@testable import TerminalFeature
+@testable import RuneFeature
 
 /// The Match-Theme palette assertions, moved out of the host `DesignTokensTests`.
 /// The host `Theme` enum doesn't exist in this repo, so the seven theme ids are

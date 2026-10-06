@@ -1,7 +1,7 @@
 import SwiftTerm
 import Testing
 
-@testable import TerminalFeature
+@testable import RuneFeature
 
 /// Proves the bell override is actually wired, rather than assuming it because
 /// the code reads correctly.

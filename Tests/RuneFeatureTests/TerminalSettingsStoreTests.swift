@@ -3,7 +3,7 @@ import Foundation
 import Observation
 import Testing
 
-@testable import TerminalFeature
+@testable import RuneFeature
 
 private final class FakeDocs: PluginDocumentStore {
     var storage: [String: Data] = [:]

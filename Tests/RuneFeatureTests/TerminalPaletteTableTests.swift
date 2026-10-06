@@ -1,6 +1,6 @@
 import Testing
 
-@testable import TerminalFeature
+@testable import RuneFeature
 
 /// Pins every row of today's terminal palette data (RUNE-2 characterisation).
 @Suite("Terminal palette table")

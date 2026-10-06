@@ -1,6 +1,6 @@
 import Testing
 
-@testable import TerminalFeature
+@testable import RuneFeature
 
 @Suite("SSHLaunch")
 struct SSHLaunchTests {

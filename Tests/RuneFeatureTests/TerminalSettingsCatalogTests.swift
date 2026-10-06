@@ -1,7 +1,7 @@
 import AinkradAppKit
 import XCTest
 
-@testable import TerminalFeature
+@testable import RuneFeature
 
 private final class MemoryDocs: PluginDocumentStore {
     private var storage: [String: Data] = [:]

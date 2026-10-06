@@ -1,6 +1,6 @@
 import Testing
 
-@testable import TerminalFeature
+@testable import RuneFeature
 
 @Suite("OSC 9 notification parsing")
 struct TerminalOSCNotificationTests {

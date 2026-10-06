@@ -4,7 +4,7 @@ import SwiftTerm
 import SwiftUI
 import Testing
 
-@testable import TerminalFeature
+@testable import RuneFeature
 
 /// Hex parsing, `Color+Hex`, the native-colour install in
 /// `TerminalContainerView.apply`, and `RuneApp.chromeFill` (RUNE-2).

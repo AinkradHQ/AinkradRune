@@ -33,10 +33,10 @@ targets:
   # Static library: its objects (and the statically-linked SwiftTerm) fold into
   # whatever links it. AinkradAppKit is dynamic and NEVER embedded — resolved
   # from the host's copy at runtime via @rpath so protocol metadata is shared.
-  TerminalFeature:
+  RuneFeature:
     type: library.static
     platform: macOS
-    sources: [Sources/TerminalFeature]
+    sources: [Sources/RuneFeature]
     dependencies:
       - package: SwiftTerm
       - package: AinkradAppKit
@@ -59,7 +59,7 @@ targets:
         # can change generation without any source file changing.
         basedOnDependencyAnalysis: false
     dependencies:
-      - target: TerminalFeature
+      - target: RuneFeature
       # SwiftTerm linked here too so its objects land in the bundle's mach-o
       # (static libraries don't propagate object code by themselves).
       - package: SwiftTerm
@@ -72,16 +72,16 @@ targets:
         INFOPLIST_FILE: Sources/RunePlugin/Info.plist
         MACH_O_TYPE: mh_bundle
         LD_RUNPATH_SEARCH_PATHS: "@executable_path/../Frameworks"
-        OTHER_LDFLAGS: ["-lTerminalFeature"]
-  TerminalFeatureTests:
+        OTHER_LDFLAGS: ["-lRuneFeature"]
+  RuneFeatureTests:
     type: bundle.unit-test
     platform: macOS
-    sources: [Tests/TerminalFeatureTests]
+    sources: [Tests/RuneFeatureTests]
     dependencies:
-      - target: TerminalFeature
+      - target: RuneFeature
       - package: SwiftTerm
       - package: AinkradAppKit
 schemes:
   RunePlugin:
-    build: { targets: { RunePlugin: all, TerminalFeatureTests: [test] } }
-    test:  { config: Debug, targets: [TerminalFeatureTests] }
+    build: { targets: { RunePlugin: all, RuneFeatureTests: [test] } }
+    test:  { config: Debug, targets: [RuneFeatureTests] }

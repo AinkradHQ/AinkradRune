@@ -1,6 +1,6 @@
 import Testing
 
-@testable import TerminalFeature
+@testable import RuneFeature
 
 /// Pins how `TerminalAppearanceResolver` combines scheme, host theme and
 /// overrides today. RUNE-5 must keep every expectation here unchanged.

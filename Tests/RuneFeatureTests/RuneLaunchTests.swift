@@ -2,7 +2,7 @@ import AinkradAppKit
 import Foundation
 import Testing
 
-@testable import TerminalFeature
+@testable import RuneFeature
 
 /// Rune's launch seam, widened in E5.
 ///

@@ -2,7 +2,7 @@ import AinkradAppKit
 import SwiftUI
 import Testing
 
-@testable import TerminalFeature
+@testable import RuneFeature
 
 /// Rune's basic mode: one command, no interactive shell.
 @Suite("Rune — basic mode")

@@ -1,7 +1,7 @@
 import Foundation
 import Testing
 
-@testable import TerminalFeature
+@testable import RuneFeature
 
 /// Wave 2: agent-echoed output was fed straight into the emulator's parser.
 /// That payload is captured stdout — a fetched page, a file from a cloned
