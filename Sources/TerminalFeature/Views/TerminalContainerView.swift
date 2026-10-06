@@ -167,7 +167,7 @@ struct TerminalContainerView: NSViewRepresentable {
     /// Applies the resolved appearance. Skips entirely when nothing changed —
     /// crucially, a resize does NOT change the appearance, so we don't re-set
     /// the font mid-resize (that runs resetFont/selectNone).
-    private func apply(_ appearance: TerminalRenderAppearance, to view: AinkradTerminalView, coordinator: Coordinator) {
+    func apply(_ appearance: TerminalRenderAppearance, to view: AinkradTerminalView, coordinator: Coordinator) {
         guard coordinator.appliedAppearance != appearance else { return }
         coordinator.appliedAppearance = appearance
 
@@ -212,14 +212,14 @@ struct TerminalContainerView: NSViewRepresentable {
 
     // MARK: - Color / font conversion
 
-    private static func rgb(hex: String) -> (r: UInt8, g: UInt8, b: UInt8)? {
+    static func rgb(hex: String) -> (r: UInt8, g: UInt8, b: UInt8)? {
         var value = hex
         if value.hasPrefix("#") { value.removeFirst() }
         guard value.count == 6, let int = UInt32(value, radix: 16) else { return nil }
         return (UInt8((int >> 16) & 0xFF), UInt8((int >> 8) & 0xFF), UInt8(int & 0xFF))
     }
 
-    private static func nsColor(hex: String) -> NSColor {  // design-lint: allow hex-color user-chosen terminal colour (settings data)
+    static func nsColor(hex: String) -> NSColor {  // design-lint: allow hex-color user-chosen terminal colour (settings data)
         guard let c = rgb(hex: hex) else { return .black }
         return NSColor(
             srgbRed: CGFloat(c.r) / 255,
@@ -229,7 +229,7 @@ struct TerminalContainerView: NSViewRepresentable {
         )
     }
 
-    private static func terminalColor(hex: String) -> SwiftTerm.Color? {  // design-lint: allow hex-color user-chosen terminal colour (settings data)
+    static func terminalColor(hex: String) -> SwiftTerm.Color? {  // design-lint: allow hex-color user-chosen terminal colour (settings data)
         guard let c = rgb(hex: hex) else { return nil }
         // SwiftTerm.Color components are 16-bit; scale 8-bit up by 257.
         return SwiftTerm.Color(red: UInt16(c.r) * 257, green: UInt16(c.g) * 257, blue: UInt16(c.b) * 257)
