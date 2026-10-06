@@ -33,10 +33,6 @@ final class InMemoryPersistenceStore {
         guard let data = try? JSONEncoder().encode(document) else { return }
         storage[T.documentID] = data
     }
-
-    func delete<T: TestDocument>(_ type: T.Type) {
-        storage[T.documentID] = nil
-    }
 }
 
 /// A test double for the live-terminal surface `TerminalContextBridge` reads.

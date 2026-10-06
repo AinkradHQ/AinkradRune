@@ -51,19 +51,6 @@ struct RuneSignalReporter {
             dedupeKey: "rune.session:\(sessionID.uuidString)")
     }
 
-    /// The program running in a pane rang the terminal bell.
-    ///
-    /// **Deliberately not reported.** The first cut emitted a row per bell, and
-    /// the shells ring it for ambiguous tab-completion — so the feed filled
-    /// with rows the user did not ask for. Real agents announce themselves
-    /// through OSC 9 (below), which carries text and a state; a bare BEL
-    /// carries one byte and cannot say who rang or why.
-    ///
-    /// Kept as a no-op rather than deleted: the capture in
-    /// `AinkradTerminalView` is the hard part, and a future setting could
-    /// reasonably turn this back on.
-    func bellRang(sessionID: UUID) {}
-
     /// A program in the pane asked to show a notification, via OSC 9.
     ///
     /// This is the path that actually carries coding agents: Claude Code's

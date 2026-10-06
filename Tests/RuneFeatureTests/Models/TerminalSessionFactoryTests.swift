@@ -11,9 +11,9 @@ private struct SpyShellResolver: ShellResolving {
 }
 
 private struct SpyWorkingDirectoryResolver: WorkingDirectoryResolving {
-    var onResolve: (URL?, URL?) -> WorkingDirectoryResolution
-    func resolveWorkingDirectory(sessionOverride: URL?, settingsDefault: URL?) -> WorkingDirectoryResolution {
-        onResolve(sessionOverride, settingsDefault)
+    var onResolve: (URL?) -> WorkingDirectoryResolution
+    func resolveWorkingDirectory(settingsDefault: URL?) -> WorkingDirectoryResolution {
+        onResolve(settingsDefault)
     }
 }
 
@@ -28,10 +28,9 @@ final class TerminalSessionFactoryTests {
                 capturedShellOverride = override
                 return "/bin/zsh"
             }),
-            workingDirectoryResolver: SpyWorkingDirectoryResolver(onResolve: { _, _ in
+            workingDirectoryResolver: SpyWorkingDirectoryResolver(onResolve: { _ in
                 WorkingDirectoryResolution(
-                    url: URL(fileURLWithPath: "/Users/someone"), rejectedSessionOverride: false,
-                    rejectedSettingsDefault: false)
+                    url: URL(fileURLWithPath: "/Users/someone"), rejectedSettingsDefault: false)
             }),
             settings: TerminalSettings()
         )
@@ -52,9 +51,9 @@ final class TerminalSessionFactoryTests {
                 capturedShellOverride = override
                 return override ?? "/bin/zsh"
             }),
-            workingDirectoryResolver: SpyWorkingDirectoryResolver(onResolve: { _, _ in
+            workingDirectoryResolver: SpyWorkingDirectoryResolver(onResolve: { _ in
                 WorkingDirectoryResolution(
-                    url: URL(fileURLWithPath: "/home"), rejectedSessionOverride: false, rejectedSettingsDefault: false)
+                    url: URL(fileURLWithPath: "/home"), rejectedSettingsDefault: false)
             }),
             settings: TerminalSettings(defaultShell: "/bin/bash", defaultWorkingDirectory: nil)
         )
@@ -75,9 +74,9 @@ final class TerminalSessionFactoryTests {
                 if let override { throw ShellResolutionError.invalidOverride(path: override) }
                 return "/bin/zsh"
             }),
-            workingDirectoryResolver: SpyWorkingDirectoryResolver(onResolve: { _, _ in
+            workingDirectoryResolver: SpyWorkingDirectoryResolver(onResolve: { _ in
                 WorkingDirectoryResolution(
-                    url: URL(fileURLWithPath: "/home"), rejectedSessionOverride: false, rejectedSettingsDefault: false)
+                    url: URL(fileURLWithPath: "/home"), rejectedSettingsDefault: false)
             }),
             settings: TerminalSettings(defaultShell: "/not/real", defaultWorkingDirectory: nil)
         )
@@ -96,9 +95,9 @@ final class TerminalSessionFactoryTests {
                 if let override { throw ShellResolutionError.invalidOverride(path: override) }
                 return "/bin/zsh"
             }),
-            workingDirectoryResolver: SpyWorkingDirectoryResolver(onResolve: { _, _ in
+            workingDirectoryResolver: SpyWorkingDirectoryResolver(onResolve: { _ in
                 WorkingDirectoryResolution(
-                    url: URL(fileURLWithPath: "/home"), rejectedSessionOverride: false, rejectedSettingsDefault: false)
+                    url: URL(fileURLWithPath: "/home"), rejectedSettingsDefault: false)
             }),
             settings: TerminalSettings(defaultShell: "/not/real", defaultWorkingDirectory: nil)
         )
@@ -116,9 +115,9 @@ final class TerminalSessionFactoryTests {
     func rejectedWorkingDirectorySurfacesStartupNotice() {
         let factory = TerminalSessionFactory(
             shellResolver: SpyShellResolver(onResolve: { _ in "/bin/zsh" }),
-            workingDirectoryResolver: SpyWorkingDirectoryResolver(onResolve: { _, _ in
+            workingDirectoryResolver: SpyWorkingDirectoryResolver(onResolve: { _ in
                 WorkingDirectoryResolution(
-                    url: URL(fileURLWithPath: "/home"), rejectedSessionOverride: false, rejectedSettingsDefault: true)
+                    url: URL(fileURLWithPath: "/home"), rejectedSettingsDefault: true)
             }),
             settings: TerminalSettings(defaultShell: nil, defaultWorkingDirectory: URL(fileURLWithPath: "/nonexistent"))
         )
@@ -136,9 +135,9 @@ final class TerminalSessionFactoryTests {
     func cleanResolutionHasNoNotices() {
         let factory = TerminalSessionFactory(
             shellResolver: SpyShellResolver(onResolve: { _ in "/bin/zsh" }),
-            workingDirectoryResolver: SpyWorkingDirectoryResolver(onResolve: { _, _ in
+            workingDirectoryResolver: SpyWorkingDirectoryResolver(onResolve: { _ in
                 WorkingDirectoryResolution(
-                    url: URL(fileURLWithPath: "/home"), rejectedSessionOverride: false, rejectedSettingsDefault: false)
+                    url: URL(fileURLWithPath: "/home"), rejectedSettingsDefault: false)
             }),
             settings: TerminalSettings()
         )
@@ -156,10 +155,10 @@ final class TerminalSessionFactoryTests {
         var capturedSettingsDefault: URL??
         let factory = TerminalSessionFactory(
             shellResolver: SpyShellResolver(onResolve: { _ in "/bin/zsh" }),
-            workingDirectoryResolver: SpyWorkingDirectoryResolver(onResolve: { _, settingsDefault in
+            workingDirectoryResolver: SpyWorkingDirectoryResolver(onResolve: { settingsDefault in
                 capturedSettingsDefault = settingsDefault
                 return WorkingDirectoryResolution(
-                    url: configuredDirectory, rejectedSessionOverride: false, rejectedSettingsDefault: false)
+                    url: configuredDirectory, rejectedSettingsDefault: false)
             }),
             settings: TerminalSettings(defaultShell: nil, defaultWorkingDirectory: configuredDirectory)
         )

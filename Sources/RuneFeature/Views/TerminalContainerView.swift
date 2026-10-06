@@ -29,19 +29,6 @@ final class AinkradTerminalView: LocalProcessTerminalView {
     var onReady: (() -> Void)?
     private var didBecomeReady = false
 
-    /// Fired when the program running in this pane rings the terminal bell.
-    ///
-    /// Overriding is the only way to see it: `LocalProcessTerminalView` makes
-    /// itself the `terminalDelegate` and forwards just four callbacks to its
-    /// `processDelegate` — sizeChanged, setTerminalTitle,
-    /// hostCurrentDirectoryUpdate and processTerminated. `bell` is not among
-    /// them, so it reaches this window and dies here unless we catch it.
-    ///
-    /// This is how a CLI says "I need you": Claude Code's terminal-bell
-    /// notification channel writes BEL, and so does anything else that wants
-    /// attention without owning a UI.
-    var onBell: (() -> Void)?
-
     /// Fired for `ESC ] 9 ; <payload>` — iTerm2's notification sequence, and
     /// the one coding-agent hooks actually use.
     ///
@@ -56,13 +43,6 @@ final class AinkradTerminalView: LocalProcessTerminalView {
             guard let self, let payload = String(bytes: data, encoding: .utf8) else { return }
             Task { @MainActor in self.onOSCNotification?(payload) }
         }
-    }
-
-    override func bell(source: Terminal) {
-        // Still ring: the audible/visual bell is the terminal's own behaviour
-        // and reporting it is additive, not a replacement.
-        super.bell(source: source)
-        onBell?()
     }
 
     /// True when this pane owns the window's keyboard focus.
@@ -119,7 +99,6 @@ struct TerminalContainerView: NSViewRepresentable {
     func makeNSView(context: Context) -> AinkradTerminalView {
         let view = AinkradTerminalView(frame: .zero)
         view.processDelegate = context.coordinator
-        view.onBell = { [weak coordinator = context.coordinator] in coordinator?.bellRang() }
         view.onOSCNotification = { [weak coordinator = context.coordinator] payload in
             coordinator?.oscNotification(payload)
         }
@@ -321,18 +300,8 @@ struct TerminalContainerView: NSViewRepresentable {
             }
         }
 
-        /// The program in this pane rang the bell.
-        func bellRang() {
-            Task { @MainActor [session, reporter] in
-                reporter.bellRang(sessionID: session.id)
-            }
-        }
-
         func processTerminated(source: TerminalView, exitCode: Int32?) {
             Task { @MainActor [session, reporter] in
-                session.terminate()
-                // Reported after `terminate()`, so the session is already in its
-                // final state if anything reads it from the feed.
                 reporter.sessionEnded(
                     exitCode: exitCode,
                     isRemote: session.launchExecutable != nil,

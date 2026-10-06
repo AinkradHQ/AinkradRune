@@ -6,16 +6,15 @@ import Foundation
 /// Architecture.md.
 struct WorkingDirectoryResolution: Equatable {
     let url: URL
-    let rejectedSessionOverride: Bool
     let rejectedSettingsDefault: Bool
 }
 
 protocol WorkingDirectoryResolving {
-    func resolveWorkingDirectory(sessionOverride: URL?, settingsDefault: URL?) -> WorkingDirectoryResolution
+    func resolveWorkingDirectory(settingsDefault: URL?) -> WorkingDirectoryResolution
 }
 
-/// Resolves a Terminal session's working directory: session override →
-/// Terminal settings default → home directory. Each candidate is validated
+/// Resolves a Terminal session's working directory: Terminal settings
+/// default → home directory. Each candidate is validated
 /// (exists, is a directory, is readable) before use; an invalid one falls
 /// through to the next tier rather than failing session start.
 struct WorkingDirectoryResolver: WorkingDirectoryResolving {
@@ -30,37 +29,17 @@ struct WorkingDirectoryResolver: WorkingDirectoryResolving {
         self.homeDirectory = homeDirectory
     }
 
-    func resolveWorkingDirectory(sessionOverride: URL?, settingsDefault: URL?) -> WorkingDirectoryResolution {
-        var rejectedSessionOverride = false
+    func resolveWorkingDirectory(settingsDefault: URL?) -> WorkingDirectoryResolution {
         var rejectedSettingsDefault = false
-
-        if let sessionOverride {
-            if isValidDirectory(sessionOverride) {
-                return WorkingDirectoryResolution(
-                    url: sessionOverride,
-                    rejectedSessionOverride: false,
-                    rejectedSettingsDefault: false
-                )
-            }
-            rejectedSessionOverride = true
-        }
 
         if let settingsDefault {
             if isValidDirectory(settingsDefault) {
-                return WorkingDirectoryResolution(
-                    url: settingsDefault,
-                    rejectedSessionOverride: rejectedSessionOverride,
-                    rejectedSettingsDefault: false
-                )
+                return WorkingDirectoryResolution(url: settingsDefault, rejectedSettingsDefault: false)
             }
             rejectedSettingsDefault = true
         }
 
-        return WorkingDirectoryResolution(
-            url: homeDirectory(),
-            rejectedSessionOverride: rejectedSessionOverride,
-            rejectedSettingsDefault: rejectedSettingsDefault
-        )
+        return WorkingDirectoryResolution(url: homeDirectory(), rejectedSettingsDefault: rejectedSettingsDefault)
     }
 
     private static func defaultIsValidDirectory(_ url: URL) -> Bool {

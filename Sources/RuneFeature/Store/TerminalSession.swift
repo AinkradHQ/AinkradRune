@@ -20,7 +20,6 @@ final class TerminalSession {
     /// login-shell case.
     let launchExecutable: String?
     let launchArgs: [String]?
-    private(set) var isRunning = true
 
     init(
         id: UUID = UUID(),
@@ -36,10 +35,6 @@ final class TerminalSession {
         self.startupNotices = startupNotices
         self.launchExecutable = launchExecutable
         self.launchArgs = launchArgs
-    }
-
-    func terminate() {
-        isRunning = false
     }
 
     /// The remote host, for a session launched over SSH.

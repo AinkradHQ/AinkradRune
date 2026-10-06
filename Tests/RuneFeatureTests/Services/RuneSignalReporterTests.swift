@@ -115,15 +115,6 @@ struct RuneSignalReporterTests {
         #expect(emitter.calls[0].body?.contains("/tmp/gone") == true)
     }
 
-    @Test("the bell no longer files a row — OSC 9 carries real agents")
-    func bellIsSilent() {
-        let (reporter, emitter) = self.reporter()
-        for _ in 0..<5 { reporter.bellRang(sessionID: UUID()) }
-        #expect(
-            emitter.calls.isEmpty,
-            "shells ring the bell for tab completion; a row per bell was pure noise")
-    }
-
     @Test("Claude Code's real hook payload becomes one urgent, clickable event")
     func agentAttention() {
         let (reporter, emitter) = self.reporter()

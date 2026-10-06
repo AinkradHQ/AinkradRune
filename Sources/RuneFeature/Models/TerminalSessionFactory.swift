@@ -1,3 +1,4 @@
+import AinkradAppKit
 import Foundation
 
 /// Resolves a new Terminal session's shell and working directory from
@@ -53,7 +54,6 @@ struct TerminalSessionFactory {
         }
 
         let resolution = workingDirectoryResolver.resolveWorkingDirectory(
-            sessionOverride: nil,
             settingsDefault: settings.defaultWorkingDirectory
         )
         if resolution.rejectedSettingsDefault, let configuredDirectory = settings.defaultWorkingDirectory {
@@ -67,7 +67,7 @@ struct TerminalSessionFactory {
 
     func makeSession(launch: SSHLaunch? = nil) -> TerminalSession {
         let resolved = resolve()
-        TerminalLog.terminal.info(
+        AinkradLog.logger(app: "rune", area: "session").info(
             "Terminal session resolved: shell \(resolved.shellPath, privacy: .public), cwd \(resolved.workingDirectory.path, privacy: .public), \(resolved.notices.count) notice(s)"
         )
         return TerminalSession(
