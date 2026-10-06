@@ -19,13 +19,13 @@ struct SSHLaunchTests {
         #expect(SSHLaunch(json: #"{"kind":"other","host":"h","port":22,"username":"u"}"#) == nil)
     }
     @Test("argv: identity + non-default port + user@host")
-    func argvFull() {
-        let l = SSHLaunch(json: #"{"kind":"ssh","host":"h","port":2222,"username":"u","identityFile":"/k"}"#)!
+    func argvFull() throws {
+        let l = try #require(SSHLaunch(json: #"{"kind":"ssh","host":"h","port":2222,"username":"u","identityFile":"/k"}"#))
         #expect(SSHInvocation.argv(l) == ["-i", "/k", "-p", "2222", "u@h"])
     }
     @Test("argv: default port omitted, empty user drops prefix")
-    func argvMinimal() {
-        let l = SSHLaunch(json: #"{"kind":"ssh","host":"h","port":22,"username":"","identityFile":null}"#)!
+    func argvMinimal() throws {
+        let l = try #require(SSHLaunch(json: #"{"kind":"ssh","host":"h","port":22,"username":"","identityFile":null}"#))
         #expect(SSHInvocation.argv(l) == ["h"])
     }
 }

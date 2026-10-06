@@ -69,12 +69,12 @@ struct TerminalContextBridgeTests {
     }
 
     @Test("oversized buffer is trimmed to a bounded tail with a marker")
-    func boundedTail() {
+    func boundedTail() throws {
         let bridge = TerminalContextBridge()
         let big = String(repeating: "a", count: 5000) + "TAIL_MARKER_" + String(repeating: "b", count: 5000)
         let source = FakeBufferSource(buffer: big)
         bridge.setActiveSource(source)
-        let text = bridge.snapshot()!.text
+        let text = try #require(bridge.snapshot()).text
         #expect(text.count <= 8000 + 32)  // bounded near the budget
         #expect(text.contains("TAIL_MARKER_"))  // keeps the recent tail
         #expect(text.hasPrefix("…[earlier output truncated]"))

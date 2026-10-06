@@ -25,5 +25,16 @@ struct TerminalPaletteTests {
         let fallback = TerminalMatchThemePalette.forThemeID("does-not-exist")
         let dflt = TerminalMatchThemePalette.forThemeID("neonBlue")
         #expect(fallback.background == dflt.background)
+        #expect(fallback.background == TerminalMatchThemePalette.fallback.background)
+        #expect(fallback.ansi.count == 16)
+    }
+
+    @Test("an empty or wrongly-cased theme id returns the stored fallback without crashing")
+    func malformedIDsFallBack() {
+        for id in ["", "NEONBLUE", "Dracula", " nord"] {
+            let palette = TerminalMatchThemePalette.forThemeID(id)
+            #expect(palette.background == TerminalMatchThemePalette.fallback.background)
+            #expect(palette.cursor == TerminalMatchThemePalette.fallback.cursor)
+        }
     }
 }
