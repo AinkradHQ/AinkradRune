@@ -1,5 +1,5 @@
-import Foundation
 import AinkradAppKit
+import Foundation
 import TerminalFeature
 
 /// The bundle's `NSPrincipalClass`. `@objc` + explicit name so the Info.plist

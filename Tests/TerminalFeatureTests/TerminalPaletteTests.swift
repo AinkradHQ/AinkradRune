@@ -1,4 +1,5 @@
 import Testing
+
 @testable import TerminalFeature
 
 /// The Match-Theme palette assertions, moved out of the host `DesignTokensTests`.

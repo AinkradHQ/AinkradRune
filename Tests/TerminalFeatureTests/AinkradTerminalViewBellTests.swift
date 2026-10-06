@@ -1,5 +1,6 @@
-import Testing
 import SwiftTerm
+import Testing
+
 @testable import TerminalFeature
 
 /// Proves the bell override is actually wired, rather than assuming it because

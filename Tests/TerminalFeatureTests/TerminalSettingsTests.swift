@@ -1,6 +1,7 @@
-import Testing
-import Foundation
 import AinkradAppKit
+import Foundation
+import Testing
+
 @testable import TerminalFeature
 
 @Suite("TerminalSettings")
@@ -45,9 +46,13 @@ final class TerminalSettingsTests {
     func backgroundOpacityClamps() {
         var settings = TerminalSettings()
         settings.backgroundOpacity = 0.05
-        #expect(TerminalAppearanceResolver.resolve(settings: settings, tokens: tokens(themeID: "neonBlue")).backgroundOpacity == 0.2)
+        #expect(
+            TerminalAppearanceResolver.resolve(settings: settings, tokens: tokens(themeID: "neonBlue"))
+                .backgroundOpacity == 0.2)
         settings.backgroundOpacity = 0.7
-        #expect(TerminalAppearanceResolver.resolve(settings: settings, tokens: tokens(themeID: "neonBlue")).backgroundOpacity == 0.7)
+        #expect(
+            TerminalAppearanceResolver.resolve(settings: settings, tokens: tokens(themeID: "neonBlue"))
+                .backgroundOpacity == 0.7)
     }
 
     @Test("appearance fields round-trip through the persistence store")
@@ -118,15 +123,18 @@ struct TerminalAppearanceResolverTests {
         let a = TerminalAppearanceResolver.resolve(settings: settings, tokens: tokens(themeID: "neonBlue"))
         let b = TerminalAppearanceResolver.resolve(settings: settings, tokens: tokens(themeID: "cyberPurple"))
         #expect(a.background == b.background)
-        #expect(a.background == "282A36")   // Dracula background
+        #expect(a.background == "282A36")  // Dracula background
     }
 
     @Test("Every resolved appearance carries a full 16-color ANSI palette")
     func ansiPaletteHasSixteen() {
-        #expect(TerminalAppearanceResolver.resolve(settings: TerminalSettings(), tokens: tokens(themeID: "neonBlue")).ansi.count == 16)
+        #expect(
+            TerminalAppearanceResolver.resolve(settings: TerminalSettings(), tokens: tokens(themeID: "neonBlue")).ansi
+                .count == 16)
         var dracula = TerminalSettings()
         dracula.colorSchemeID = "dracula"
-        #expect(TerminalAppearanceResolver.resolve(settings: dracula, tokens: tokens(themeID: "neonBlue")).ansi.count == 16)
+        #expect(
+            TerminalAppearanceResolver.resolve(settings: dracula, tokens: tokens(themeID: "neonBlue")).ansi.count == 16)
     }
 
     @Test("Font falls back to defaults when unset, and passes explicit values through")
@@ -171,14 +179,22 @@ struct TerminalAppearanceResolverTests {
         #expect(!r.selection.isEmpty)
 
         settings.selectionColor = "00FF00"
-        #expect(TerminalAppearanceResolver.resolve(settings: settings, tokens: tokens(themeID: "neonBlue")).selection == "00FF00")
+        #expect(
+            TerminalAppearanceResolver.resolve(settings: settings, tokens: tokens(themeID: "neonBlue")).selection
+                == "00FF00")
     }
 
     @Test("sendMouseEventsToApps passes through to the resolved appearance")
     func mouseForwardingResolves() {
-        var on = TerminalSettings(); on.sendMouseEventsToApps = true
-        #expect(TerminalAppearanceResolver.resolve(settings: on, tokens: tokens(themeID: "neonBlue")).sendMouseEventsToApps == true)
-        var off = TerminalSettings(); off.sendMouseEventsToApps = false
-        #expect(TerminalAppearanceResolver.resolve(settings: off, tokens: tokens(themeID: "neonBlue")).sendMouseEventsToApps == false)
+        var on = TerminalSettings()
+        on.sendMouseEventsToApps = true
+        #expect(
+            TerminalAppearanceResolver.resolve(settings: on, tokens: tokens(themeID: "neonBlue")).sendMouseEventsToApps
+                == true)
+        var off = TerminalSettings()
+        off.sendMouseEventsToApps = false
+        #expect(
+            TerminalAppearanceResolver.resolve(settings: off, tokens: tokens(themeID: "neonBlue")).sendMouseEventsToApps
+                == false)
     }
 }

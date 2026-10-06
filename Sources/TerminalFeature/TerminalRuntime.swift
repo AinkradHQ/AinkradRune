@@ -1,5 +1,5 @@
-import Foundation
 import AinkradAppKit
+import Foundation
 
 /// Bridges Terminal's static `AinkradApp` entry points to a single shared,
 /// observable `TerminalSettingsStore` per host. `makeRootView(host:)` and
@@ -53,7 +53,10 @@ enum TerminalRuntime {
     static func contextBridge(for host: HostServices) -> TerminalContextBridge {
         let id = instance(of: host)
         var created = false
-        let bridge = bridges.value(for: id) { created = true; return TerminalContextBridge() }
+        let bridge = bridges.value(for: id) {
+            created = true
+            return TerminalContextBridge()
+        }
         // Register only on first creation, and KEEP the token so `teardown`
         // can remove it — "never removed" left a dead context source
         // registered with the host for every instance ever opened.
@@ -86,8 +89,9 @@ enum TerminalRuntime {
         _ = actionTokens.value(for: instance(of: host)) {
             host.actions.register(actionID: "terminal.echo") { json in
                 guard let data = json.data(using: .utf8),
-                      let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                      let command = obj["command"] as? String else {
+                    let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                    let command = obj["command"] as? String
+                else {
                     return AgentActionResult(text: "terminal.echo: malformed input", isError: true)
                 }
                 let output = obj["output"] as? String ?? ""

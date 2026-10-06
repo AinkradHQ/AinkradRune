@@ -1,6 +1,6 @@
-import SwiftUI
-import Foundation
 import AinkradAppKit
+import Foundation
+import SwiftUI
 
 /// Rune's **basic** mode: type a command, run it, read the output.
 ///
@@ -44,15 +44,20 @@ struct RuneBasicView: View {
             }
         } content: {
             VStack(spacing: AinkradSpacing.sm) {
-                AinkradTextField(text: $command,
-                                 placeholder: "Command — your shell, without its startup files")
-                    .onSubmit { run() }
-                    .disabled(isRunning)
-                AinkradLogView(lines: buffer.all,
-                               palette: AinkradANSIPalette(theme: tokens,
-                                                           statusColors: statusColors),
-                               foreground: tokens.foreground)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                AinkradTextField(
+                    text: $command,
+                    placeholder: "Command — your shell, without its startup files"
+                )
+                .onSubmit { run() }
+                .disabled(isRunning)
+                AinkradLogView(
+                    lines: buffer.all,
+                    palette: AinkradANSIPalette(
+                        theme: tokens,
+                        statusColors: statusColors),
+                    foreground: tokens.foreground
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
     }

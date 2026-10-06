@@ -1,5 +1,6 @@
-import Testing
 import Foundation
+import Testing
+
 @testable import TerminalFeature
 
 /// Wave 2: agent-echoed output was fed straight into the emulator's parser.
@@ -59,8 +60,8 @@ struct TerminalEchoSanitizerTests {
 
     @Test("Two-character escapes are removed")
     func stripsShortEscapes() {
-        #expect(TerminalEchoSanitizer.sanitize("a\u{1B}cb") == "ab")   // full reset
-        #expect(TerminalEchoSanitizer.sanitize("a\u{1B}7b") == "ab")   // save cursor
+        #expect(TerminalEchoSanitizer.sanitize("a\u{1B}cb") == "ab")  // full reset
+        #expect(TerminalEchoSanitizer.sanitize("a\u{1B}7b") == "ab")  // save cursor
     }
 
     @Test("8-bit C1 controls are removed")
@@ -87,7 +88,8 @@ struct TerminalEchoSanitizerTests {
         // produce a reply.
         let colored = "\u{1B}[31mred\u{1B}[0m normal"
         #expect(TerminalEchoSanitizer.sanitize(colored) == colored)
-        #expect(TerminalEchoSanitizer.sanitize("\u{1B}[1;38;5;204mbold\u{1B}[m")
+        #expect(
+            TerminalEchoSanitizer.sanitize("\u{1B}[1;38;5;204mbold\u{1B}[m")
                 == "\u{1B}[1;38;5;204mbold\u{1B}[m")
     }
 
@@ -108,15 +110,16 @@ struct TerminalEchoSanitizerTests {
     @Test("A realistic hostile payload keeps its readable text and loses its teeth")
     func realisticPayload() {
         // What `cat`-ing a hostile file could look like.
-        let payload = "README\n\u{1B}]52;c;cGF5bG9hZA==\u{07}"
+        let payload =
+            "README\n\u{1B}]52;c;cGF5bG9hZA==\u{07}"
             + "\u{1B}[31mERROR\u{1B}[0m: nothing to see\n"
             + "\u{1B}[6n"
             + "\rrm -rf ~\n"
         let clean = TerminalEchoSanitizer.sanitize(payload)
         #expect(clean.contains("README"))
-        #expect(clean.contains("\u{1B}[31mERROR"))       // colour survives
-        #expect(!clean.contains("]52"))                   // clipboard write gone
-        #expect(!clean.contains("[6n"))                   // DSR gone
-        #expect(!clean.contains("\r"))                    // overwrite trick gone
+        #expect(clean.contains("\u{1B}[31mERROR"))  // colour survives
+        #expect(!clean.contains("]52"))  // clipboard write gone
+        #expect(!clean.contains("[6n"))  // DSR gone
+        #expect(!clean.contains("\r"))  // overwrite trick gone
     }
 }

@@ -17,13 +17,20 @@ enum TerminalMatchThemePalette {
     }
 
     private static let table: [String: TerminalPalette] = [
-        "neonBlue":      TerminalPalette(background: "0A0E17", foreground: "E2E8F0", cursor: "22D3EE", ansi: TerminalColorScheme.matchTheme.ansi),
-        "cyberPurple":   TerminalPalette(background: "080814", foreground: "EDE9FE", cursor: "C084FC", ansi: TerminalColorScheme.matchTheme.ansi),
-        "dracula":       TerminalPalette(background: "282A36", foreground: "F8F8F2", cursor: "BD93F9", ansi: TerminalColorScheme.dracula.ansi),
-        "nord":          TerminalPalette(background: "2E3440", foreground: "D8DEE9", cursor: "88C0D0", ansi: TerminalColorScheme.nord.ansi),
-        "tokyoNight":    TerminalPalette(background: "1A1B26", foreground: "C0CAF5", cursor: "7AA2F7", ansi: TerminalColorScheme.tokyoNight.ansi),
-        "gruvbox":       TerminalPalette(background: "282828", foreground: "EBDBB2", cursor: "FE8019", ansi: TerminalColorScheme.gruvbox.ansi),
-        "solarizedDark": TerminalPalette(background: "002B36", foreground: "839496", cursor: "93A1A1", ansi: TerminalColorScheme.solarizedDark.ansi),
+        "neonBlue": TerminalPalette(
+            background: "0A0E17", foreground: "E2E8F0", cursor: "22D3EE", ansi: TerminalColorScheme.matchTheme.ansi),
+        "cyberPurple": TerminalPalette(
+            background: "080814", foreground: "EDE9FE", cursor: "C084FC", ansi: TerminalColorScheme.matchTheme.ansi),
+        "dracula": TerminalPalette(
+            background: "282A36", foreground: "F8F8F2", cursor: "BD93F9", ansi: TerminalColorScheme.dracula.ansi),
+        "nord": TerminalPalette(
+            background: "2E3440", foreground: "D8DEE9", cursor: "88C0D0", ansi: TerminalColorScheme.nord.ansi),
+        "tokyoNight": TerminalPalette(
+            background: "1A1B26", foreground: "C0CAF5", cursor: "7AA2F7", ansi: TerminalColorScheme.tokyoNight.ansi),
+        "gruvbox": TerminalPalette(
+            background: "282828", foreground: "EBDBB2", cursor: "FE8019", ansi: TerminalColorScheme.gruvbox.ansi),
+        "solarizedDark": TerminalPalette(
+            background: "002B36", foreground: "839496", cursor: "93A1A1", ansi: TerminalColorScheme.solarizedDark.ansi),
     ]
 }
 

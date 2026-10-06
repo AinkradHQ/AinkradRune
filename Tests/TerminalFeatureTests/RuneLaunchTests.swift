@@ -1,6 +1,7 @@
-import Testing
-import Foundation
 import AinkradAppKit
+import Foundation
+import Testing
+
 @testable import TerminalFeature
 
 /// Rune's launch seam, widened in E5.
@@ -14,8 +15,9 @@ struct RuneLaunchTests {
 
     @Test("An SSH payload still classifies as SSH")
     func sshStillWorks() {
-        let ssh = SSHLaunchPayload(host: "example.com", port: 22,
-                                   username: "ahmed", identityFile: nil)
+        let ssh = SSHLaunchPayload(
+            host: "example.com", port: 22,
+            username: "ahmed", identityFile: nil)
         let decoded = RuneLaunch.decode(ssh.json)
         #expect(decoded?.sshPayload?.host == "example.com")
     }
@@ -56,8 +58,9 @@ struct RuneLaunchTests {
     func invalidSSHIsRefused() {
         // Every field lands in an ssh argv, and ssh's option surface runs shell
         // commands — so a hostile host must not survive classification.
-        let hostile = SSHLaunchPayload(host: "-oProxyCommand=touch /tmp/pwned",
-                                       port: 22, username: "a", identityFile: nil)
+        let hostile = SSHLaunchPayload(
+            host: "-oProxyCommand=touch /tmp/pwned",
+            port: 22, username: "a", identityFile: nil)
         #expect(RuneLaunch.decode(hostile.json) == nil)
     }
 }

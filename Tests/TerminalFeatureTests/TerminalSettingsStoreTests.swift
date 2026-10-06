@@ -1,8 +1,9 @@
-import Testing
+import AinkradAppKit
 import Foundation
 import Observation
+import Testing
+
 @testable import TerminalFeature
-import AinkradAppKit
 
 private final class FakeDocs: PluginDocumentStore {
     var storage: [String: Data] = [:]
@@ -30,7 +31,10 @@ struct TerminalSettingsStoreTests {
     func updatePersists() {
         let docs = FakeDocs()
         let store = TerminalSettingsStore(documents: docs)
-        store.update { $0.fontFamily = "Menlo"; $0.fontSize = 16 }
+        store.update {
+            $0.fontFamily = "Menlo"
+            $0.fontSize = 16
+        }
         let reloaded = TerminalSettingsStore(documents: docs)
         #expect(reloaded.settings.fontFamily == "Menlo")
         #expect(reloaded.settings.fontSize == 16)
@@ -40,7 +44,11 @@ struct TerminalSettingsStoreTests {
     func updatePublishes() {
         let store = TerminalSettingsStore(documents: FakeDocs())
         let flag = Flag()
-        withObservationTracking { _ = store.settings } onChange: { flag.fired = true }
+        withObservationTracking {
+            _ = store.settings
+        } onChange: {
+            flag.fired = true
+        }
         store.update { $0.cursorBlink = false }
         #expect(flag.fired)
     }

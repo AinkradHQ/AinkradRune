@@ -1,5 +1,6 @@
-import XCTest
 import AinkradAppKit
+import XCTest
+
 @testable import TerminalFeature
 
 private final class MemoryDocs: PluginDocumentStore {
@@ -40,7 +41,7 @@ final class TerminalSettingsCatalogTests: XCTestCase {
         let store = TerminalSettingsStore(documents: MemoryDocs())
         let field = try XCTUnwrap(page(store).groups[0].fields.first { $0.label == "Background transparency" })
         guard case .slider(_, _, let value) = field.kind else { return XCTFail("not a slider") }
-        XCTAssertEqual(value.wrappedValue, 0.2, accuracy: 0.0001)   // opaque = far left
+        XCTAssertEqual(value.wrappedValue, 0.2, accuracy: 0.0001)  // opaque = far left
         value.wrappedValue = 1.0
         XCTAssertEqual(store.settings.backgroundOpacity, 0.2, accuracy: 0.0001)
     }

@@ -1,5 +1,5 @@
-import SwiftUI
 import AinkradAppKit
+import SwiftUI
 
 /// A section header with a glowing accent tick, shared across Settings sections.
 /// Retyped from the host's `SettingsSectionHeader` to take `HostThemeTokens`.

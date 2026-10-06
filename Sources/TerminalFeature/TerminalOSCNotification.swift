@@ -56,13 +56,15 @@ struct TerminalOSCNotification: Equatable {
 
         let parts = trimmed.components(separatedBy: ":")
         guard parts.count >= 3, parts[0] == "conterm-agent" else {
-            return TerminalOSCNotification(title: trimmed, body: nil,
-                                           detail: nil, kind: .message)
+            return TerminalOSCNotification(
+                title: trimmed, body: nil,
+                detail: nil, kind: .message)
         }
 
         let agent = parts[1].isEmpty ? "An agent" : parts[1].capitalized
         let state = parts[2]
-        let detail = parts.count > 3
+        let detail =
+            parts.count > 3
             ? parts[3...].joined(separator: ":").trimmingCharacters(in: .whitespaces)
             : ""
 

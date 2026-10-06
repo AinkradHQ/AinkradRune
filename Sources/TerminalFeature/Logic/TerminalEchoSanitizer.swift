@@ -42,31 +42,35 @@ enum TerminalEchoSanitizer {
         while i < scalars.count {
             let scalar = scalars[i]
 
-            if scalar == "\u{1B}" {                     // ESC
+            if scalar == "\u{1B}" {  // ESC
                 i = skipEscapeSequence(scalars, from: i, appendingSGRTo: &out)
                 continue
             }
 
             switch scalar.value {
-            case 0x0A:                                   // LF — keep
-                out.unicodeScalars.append(scalar); i += 1
-            case 0x09:                                   // TAB — keep
-                out.unicodeScalars.append(scalar); i += 1
-            case 0x0D:                                   // CR
+            case 0x0A:  // LF — keep
+                out.unicodeScalars.append(scalar)
+                i += 1
+            case 0x09:  // TAB — keep
+                out.unicodeScalars.append(scalar)
+                i += 1
+            case 0x0D:  // CR
                 // `\r\n` becomes `\n`; a BARE `\r` is dropped rather than kept,
                 // because returning to column zero is what lets output overwrite
                 // what it already printed.
                 if i + 1 < scalars.count, scalars[i + 1].value == 0x0A {
-                    out.unicodeScalars.append("\u{0A}"); i += 2
+                    out.unicodeScalars.append("\u{0A}")
+                    i += 2
                 } else {
                     i += 1
                 }
-            case 0x00...0x1F, 0x7F:                      // other C0 + DEL — drop
+            case 0x00...0x1F, 0x7F:  // other C0 + DEL — drop
                 i += 1
-            case 0x80...0x9F:                            // C1 controls (incl. 8-bit CSI/OSC) — drop
+            case 0x80...0x9F:  // C1 controls (incl. 8-bit CSI/OSC) — drop
                 i += 1
             default:
-                out.unicodeScalars.append(scalar); i += 1
+                out.unicodeScalars.append(scalar)
+                i += 1
             }
         }
         return out
@@ -79,10 +83,10 @@ enum TerminalEchoSanitizer {
         _ scalars: [Unicode.Scalar], from start: Int, appendingSGRTo out: inout String
     ) -> Int {
         let i = start + 1
-        guard i < scalars.count else { return i }        // trailing lone ESC
+        guard i < scalars.count else { return i }  // trailing lone ESC
 
         switch scalars[i] {
-        case "[":                                        // CSI
+        case "[":  // CSI
             let paramsStart = i + 1
             var j = paramsStart
             // Parameter and intermediate bytes, then one final byte 0x40–0x7E.
@@ -98,18 +102,18 @@ enum TerminalEchoSanitizer {
             }
             return j + 1
 
-        case "]":                                        // OSC — runs to BEL or ST (ESC \)
+        case "]":  // OSC — runs to BEL or ST (ESC \)
             var j = i + 1
             while j < scalars.count {
-                if scalars[j].value == 0x07 { return j + 1 }                    // BEL
+                if scalars[j].value == 0x07 { return j + 1 }  // BEL
                 if scalars[j] == "\u{1B}", j + 1 < scalars.count, scalars[j + 1] == "\\" {
-                    return j + 2                                                // ST
+                    return j + 2  // ST
                 }
                 j += 1
             }
-            return scalars.count                          // unterminated — drop the rest
+            return scalars.count  // unterminated — drop the rest
 
-        case "P", "X", "^", "_":                          // DCS / SOS / PM / APC — run to ST
+        case "P", "X", "^", "_":  // DCS / SOS / PM / APC — run to ST
             var j = i + 1
             while j < scalars.count {
                 if scalars[j] == "\u{1B}", j + 1 < scalars.count, scalars[j + 1] == "\\" {

@@ -56,7 +56,8 @@ struct ShellResolver: ShellResolving {
         guard let contents = try? String(contentsOfFile: "/etc/shells", encoding: .utf8) else {
             return [fallback]
         }
-        let shells = contents
+        let shells =
+            contents
             .split(separator: "\n")
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty && !$0.hasPrefix("#") }

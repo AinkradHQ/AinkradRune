@@ -47,7 +47,8 @@ struct TerminalSessionFactory {
         } catch {
             shellPath = (try? shellResolver.resolveDefaultShell(override: nil)) ?? ShellResolver.fallback
             if let configuredShell = settings.defaultShell {
-                notices.append("The configured shell “\(configuredShell)” isn’t valid, so \(shellPath) was used instead.")
+                notices.append(
+                    "The configured shell “\(configuredShell)” isn’t valid, so \(shellPath) was used instead.")
             }
         }
 
@@ -56,7 +57,9 @@ struct TerminalSessionFactory {
             settingsDefault: settings.defaultWorkingDirectory
         )
         if resolution.rejectedSettingsDefault, let configuredDirectory = settings.defaultWorkingDirectory {
-            notices.append("The configured working directory “\(configuredDirectory.path)” isn’t usable, so \(resolution.url.path) was used instead.")
+            notices.append(
+                "The configured working directory “\(configuredDirectory.path)” isn’t usable, so \(resolution.url.path) was used instead."
+            )
         }
 
         return Resolution(shellPath: shellPath, workingDirectory: resolution.url, notices: notices)
@@ -64,7 +67,9 @@ struct TerminalSessionFactory {
 
     func makeSession(launch: SSHLaunch? = nil) -> TerminalSession {
         let resolved = resolve()
-        TerminalLog.terminal.info("Terminal session resolved: shell \(resolved.shellPath, privacy: .public), cwd \(resolved.workingDirectory.path, privacy: .public), \(resolved.notices.count) notice(s)")
+        TerminalLog.terminal.info(
+            "Terminal session resolved: shell \(resolved.shellPath, privacy: .public), cwd \(resolved.workingDirectory.path, privacy: .public), \(resolved.notices.count) notice(s)"
+        )
         return TerminalSession(
             workingDirectory: resolved.workingDirectory,
             shellPath: resolved.shellPath,

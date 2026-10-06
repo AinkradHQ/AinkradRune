@@ -1,6 +1,7 @@
-import Testing
-import Foundation
 import AinkradAppKit
+import Foundation
+import Testing
+
 @testable import TerminalFeature
 
 /// Covers Terminal's resources-only MCP surface. Every test drives the real
@@ -17,8 +18,11 @@ struct TerminalMCPServerTests {
     /// inside this helper would deallocate before the resource is ever read and
     /// every "live source" test would silently exercise the nil path instead.
     private func makeServer(source: FakeBufferSource? = nil)
-        -> (server: MCPAppServer, bridge: TerminalContextBridge,
-            source: FakeBufferSource?, failures: [String]) {
+        -> (
+            server: MCPAppServer, bridge: TerminalContextBridge,
+            source: FakeBufferSource?, failures: [String]
+        )
+    {
         let bridge = TerminalContextBridge()
         if let source { bridge.setActiveSource(source) }
         let (server, failures) = TerminalMCPServer.make(appID: "rune", bridge: bridge)
@@ -26,8 +30,10 @@ struct TerminalMCPServerTests {
     }
 
     /// Sends one request and returns its decoded `result` object.
-    private func call(_ server: MCPAppServer, _ method: String,
-                      params: [String: Any] = [:]) async throws -> [String: Any] {
+    private func call(
+        _ server: MCPAppServer, _ method: String,
+        params: [String: Any] = [:]
+    ) async throws -> [String: Any] {
         let request: [String: Any] = ["jsonrpc": "2.0", "id": 1, "method": method, "params": params]
         let json = String(decoding: try JSONSerialization.data(withJSONObject: request), as: UTF8.self)
         let reply = await server.handle(json)
@@ -80,8 +86,10 @@ struct TerminalMCPServerTests {
         for resource in resources {
             let annotations = resource["annotations"] as? [String: Any]
             let uri = resource["uri"] as? String ?? "?"
-            #expect(annotations?["ainkrad/requiresLiveApp"] as? Bool == false,
-                    "\(uri) must not force the app open: a fresh Terminal comes up empty, so opening it cannot answer the question")
+            #expect(
+                annotations?["ainkrad/requiresLiveApp"] as? Bool == false,
+                "\(uri) must not force the app open: a fresh Terminal comes up empty, so opening it cannot answer the question"
+            )
         }
     }
 
@@ -124,8 +132,9 @@ struct TerminalMCPServerTests {
         withExtendedLifetime(source) {}
     }
 
-    @Test("an empty live buffer is returned as empty, not as the no-terminal message",
-          .timeLimit(.minutes(1)))
+    @Test(
+        "an empty live buffer is returned as empty, not as the no-terminal message",
+        .timeLimit(.minutes(1)))
     func emptyLiveBufferIsDistinguishable() async throws {
         let (server, _, source, _) = makeServer(source: FakeBufferSource(buffer: ""))
         #expect(try await read(server, TerminalMCPServer.bufferResourceURI) == "")
@@ -149,8 +158,9 @@ struct TerminalMCPServerTests {
         #expect(text == TerminalMCPServer.noTerminalMessage)
     }
 
-    @Test("a deallocated terminal view falls back to the no-terminal message",
-          .timeLimit(.minutes(1)))
+    @Test(
+        "a deallocated terminal view falls back to the no-terminal message",
+        .timeLimit(.minutes(1)))
     func bufferAfterSourceDeallocates() async throws {
         let bridge = TerminalContextBridge()
         do {
@@ -160,7 +170,8 @@ struct TerminalMCPServerTests {
         let (server, _) = TerminalMCPServer.make(appID: "rune", bridge: bridge)
         // The bridge holds the source weakly, so this exercises the nil path
         // without crashing.
-        #expect(try await read(server, TerminalMCPServer.bufferResourceURI)
+        #expect(
+            try await read(server, TerminalMCPServer.bufferResourceURI)
                 == TerminalMCPServer.noTerminalMessage)
     }
 
