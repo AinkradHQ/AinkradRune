@@ -43,7 +43,10 @@ enum RuneRuntime {
     }
 
     static func settingsStore(for host: HostServices) -> TerminalSettingsStore {
-        stores.value(for: instance(of: host)) { TerminalSettingsStore(documents: host.documents) }
+        // Every root view and settings page reads the store first, so this is
+        // the earliest point the bundled render font is needed (once-token).
+        TerminalFonts.registerBundledFonts()
+        return stores.value(for: instance(of: host)) { TerminalSettingsStore(documents: host.documents) }
     }
 
     /// The per-host agent-context bridge. Created and **registered with the host

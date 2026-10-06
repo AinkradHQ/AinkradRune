@@ -3,8 +3,8 @@ import Foundation
 
 /// Registers the terminal's bundled render font (MesloLGS NF) for this process,
 /// resolved from whichever bundle contains this type (the loaded plugin bundle).
-public enum TerminalFonts {
-    public static func registerBundledFonts() { _ = registered }
+enum TerminalFonts {
+    static func registerBundledFonts() { _ = registered }
 
     /// A `static let` initialises exactly once, thread-safely: the once-token.
     private static let registered: Void = {
