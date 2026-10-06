@@ -13,12 +13,15 @@ struct TerminalPalette {
 /// not the host `Theme` enum. Unknown ids fall back to the default theme.
 enum TerminalMatchThemePalette {
     static func forThemeID(_ id: String) -> TerminalPalette {
-        table[id] ?? table["neonBlue"]!
+        table[id] ?? fallback
     }
 
+    /// The default theme's palette, returned for any unknown id.
+    static let fallback = TerminalPalette(
+        background: "0A0E17", foreground: "E2E8F0", cursor: "22D3EE", ansi: TerminalColorScheme.matchTheme.ansi)
+
     private static let table: [String: TerminalPalette] = [
-        "neonBlue": TerminalPalette(
-            background: "0A0E17", foreground: "E2E8F0", cursor: "22D3EE", ansi: TerminalColorScheme.matchTheme.ansi),
+        "neonBlue": fallback,
         "cyberPurple": TerminalPalette(
             background: "080814", foreground: "EDE9FE", cursor: "C084FC", ansi: TerminalColorScheme.matchTheme.ansi),
         "dracula": TerminalPalette(
