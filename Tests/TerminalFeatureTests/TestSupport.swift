@@ -1,13 +1,15 @@
-import Foundation
 import AinkradAppKit
+import Foundation
+
 @testable import TerminalFeature
 
 /// Builds a `HostThemeTokens` snapshot with the given theme id. Match-Theme
 /// resolution reads only `tokens.themeID`, so the color values are irrelevant
 /// to these assertions — black stands in for all of them.
 func tokens(themeID: String) -> HostThemeTokens {
-    HostThemeTokens(themeID: themeID, background: .black, surface: .black, surfaceElevated: .black,
-                    accentPrimary: .black, accentSecondary: .black, accentTertiary: .black, foreground: .black)
+    HostThemeTokens(
+        themeID: themeID, background: .black, surface: .black, surfaceElevated: .black,
+        accentPrimary: .black, accentSecondary: .black, accentTertiary: .black, foreground: .black)
 }
 
 /// Test-only documents: `Codable` values keyed by a stable `documentID`.
@@ -74,17 +76,23 @@ final class RecordingContextRegistry: PluginContextRegistry {
 final class RecordingActionRegistry: AgentActionProvider {
     private(set) var handlers: [AgentActionToken: (String) async -> AgentActionResult] = [:]
     private(set) var ids: [AgentActionToken: String] = [:]
-    func register(actionID: String,
-                  handler: @escaping @MainActor (String) async -> AgentActionResult) -> AgentActionToken {
+    func register(
+        actionID: String,
+        handler: @escaping @MainActor (String) async -> AgentActionResult
+    ) -> AgentActionToken {
         let token = AgentActionToken()
         handlers[token] = handler
         ids[token] = actionID
         return token
     }
-    func remove(_ token: AgentActionToken) { handlers[token] = nil; ids[token] = nil }
+    func remove(_ token: AgentActionToken) {
+        handlers[token] = nil
+        ids[token] = nil
+    }
     func invoke(actionID: String, input: String) async -> AgentActionResult? {
         guard let token = ids.first(where: { $0.value == actionID })?.key,
-              let handler = handlers[token] else { return nil }
+            let handler = handlers[token]
+        else { return nil }
         return await handler(input)
     }
 }

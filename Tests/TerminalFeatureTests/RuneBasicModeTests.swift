@@ -1,6 +1,7 @@
-import Testing
-import SwiftUI
 import AinkradAppKit
+import SwiftUI
+import Testing
+
 @testable import TerminalFeature
 
 /// Rune's basic mode: one command, no interactive shell.
@@ -22,8 +23,9 @@ struct RuneBasicModeTests {
         let host = BasicModeHost()
         host.launcher.pending = #"{"kind":"ssh","host":"example.com"}"#
         _ = RuneApp.makeRootView(host: host, mode: .basic)
-        #expect(host.launcher.takeCount == 0,
-                "basic mode must not consume a launch payload meant for a session")
+        #expect(
+            host.launcher.takeCount == 0,
+            "basic mode must not consume a launch payload meant for a session")
     }
 
     @Test("Basic mode registers no agent actions")
@@ -33,8 +35,9 @@ struct RuneBasicModeTests {
         // exist — the agent would call it and nothing would happen.
         let host = BasicModeHost()
         _ = RuneApp.makeRootView(host: host, mode: .basic)
-        #expect(host.actionRegistry.registered.isEmpty,
-                "basic mode has no session for an action to drive")
+        #expect(
+            host.actionRegistry.registered.isEmpty,
+            "basic mode has no session for an action to drive")
     }
 
     @Test("Advanced mode still registers its actions and takes its launch")
@@ -60,10 +63,12 @@ struct RuneBasicModeTests {
 
         let resolved = TerminalSessionFactory(settings: settings).resolve()
 
-        #expect(resolved.shellPath == "/bin/bash",
-                "the configured shell must be honoured, not overridden by $SHELL")
-        #expect(resolved.workingDirectory.standardizedFileURL == directory.standardizedFileURL,
-                "the configured working directory must be honoured, not replaced with home")
+        #expect(
+            resolved.shellPath == "/bin/bash",
+            "the configured shell must be honoured, not overridden by $SHELL")
+        #expect(
+            resolved.workingDirectory.standardizedFileURL == directory.standardizedFileURL,
+            "the configured working directory must be honoured, not replaced with home")
     }
 
     @Test("An invalid configured shell falls back and SAYS so")
@@ -75,8 +80,9 @@ struct RuneBasicModeTests {
         let resolved = TerminalSessionFactory(settings: settings).resolve()
 
         #expect(resolved.shellPath != "/not/a/shell")
-        #expect(resolved.notices.isEmpty == false,
-                "a rejected shell must produce a notice, not a silent substitution")
+        #expect(
+            resolved.notices.isEmpty == false,
+            "a rejected shell must produce a notice, not a silent substitution")
     }
 
     @Test("The mode-less entry point still means advanced")
@@ -104,8 +110,10 @@ private final class RecordingLauncher: PluginAppLauncher {
 @MainActor
 private final class RecordingActions: AgentActionProvider {
     private(set) var registered: [String] = []
-    func register(actionID: String,
-                  handler: @escaping @MainActor (String) async -> AgentActionResult) -> AgentActionToken {
+    func register(
+        actionID: String,
+        handler: @escaping @MainActor (String) async -> AgentActionResult
+    ) -> AgentActionToken {
         registered.append(actionID)
         return AgentActionToken()
     }
@@ -135,9 +143,11 @@ private final class BasicModeHost: HostServices {
     init() { BasicModeHost.liveInstances.append(self) }
 
     var theme: HostTheme {
-        HostTheme(.init(themeID: "t", background: .black, surface: .black,
-                        surfaceElevated: .black, accentPrimary: .white,
-                        accentSecondary: .white, accentTertiary: .white, foreground: .white))
+        HostTheme(
+            .init(
+                themeID: "t", background: .black, surface: .black,
+                surfaceElevated: .black, accentPrimary: .white,
+                accentSecondary: .white, accentTertiary: .white, foreground: .white))
     }
     var log: PluginLogger { MemoryLog() }
     var context: PluginContextRegistry { MemoryContext() }

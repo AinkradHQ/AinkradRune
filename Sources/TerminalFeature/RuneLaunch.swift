@@ -1,5 +1,5 @@
-import Foundation
 import AinkradAppKit
+import Foundation
 
 /// Everything Rune can be launched WITH, decided by looking at the payload
 /// before decoding it as anything in particular.

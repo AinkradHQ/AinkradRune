@@ -1,6 +1,7 @@
-import Testing
-import Foundation
 import AinkradAppKit
+import Foundation
+import Testing
+
 @testable import TerminalFeature
 
 @Suite("TerminalContextBridge")
@@ -74,8 +75,8 @@ struct TerminalContextBridgeTests {
         let source = FakeBufferSource(buffer: big)
         bridge.setActiveSource(source)
         let text = bridge.snapshot()!.text
-        #expect(text.count <= 8000 + 32)          // bounded near the budget
-        #expect(text.contains("TAIL_MARKER_"))    // keeps the recent tail
+        #expect(text.count <= 8000 + 32)  // bounded near the budget
+        #expect(text.contains("TAIL_MARKER_"))  // keeps the recent tail
         #expect(text.hasPrefix("…[earlier output truncated]"))
     }
 }

@@ -1,6 +1,6 @@
-import Observation
-import Foundation
 import AinkradAppKit
+import Foundation
+import Observation
 
 /// Observable owner of `TerminalSettings`, backed by the app-scoped
 /// `HostServices.documents`. Editing persists immediately AND publishes to

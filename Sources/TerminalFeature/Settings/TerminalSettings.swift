@@ -56,7 +56,8 @@ struct TerminalSettings: Codable, Equatable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         defaultShell = try container.decodeIfPresent(String.self, forKey: .defaultShell)
         defaultWorkingDirectory = try container.decodeIfPresent(URL.self, forKey: .defaultWorkingDirectory)
-        colorSchemeID = try container.decodeIfPresent(String.self, forKey: .colorSchemeID) ?? TerminalColorScheme.matchThemeID
+        colorSchemeID =
+            try container.decodeIfPresent(String.self, forKey: .colorSchemeID) ?? TerminalColorScheme.matchThemeID
         fontFamily = try container.decodeIfPresent(String.self, forKey: .fontFamily)
         fontSize = try container.decodeIfPresent(Double.self, forKey: .fontSize)
         cursorShape = try container.decodeIfPresent(TerminalCursorShape.self, forKey: .cursorShape) ?? .block

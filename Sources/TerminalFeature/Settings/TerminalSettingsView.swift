@@ -1,7 +1,7 @@
-import SwiftUI
-import AppKit
-import UniformTypeIdentifiers
 import AinkradAppKit
+import AppKit
+import SwiftUI
+import UniformTypeIdentifiers
 
 /// Terminal's per-app settings, hosted in the Settings overlay's Terminal
 /// section: Appearance (color scheme + font) and Behavior (default shell +
@@ -48,9 +48,10 @@ struct TerminalSettingsView: View {
     private var surfaceSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             AinkradSectionHeader(title: "SURFACE")
-            AinkradSurfaceSettings(appName: "Rune",
-                                   presentation: presentation,
-                                   mode: modeControl)
+            AinkradSurfaceSettings(
+                appName: "Rune",
+                presentation: presentation,
+                mode: modeControl)
         }
     }
 
@@ -189,7 +190,7 @@ struct TerminalSettingsView: View {
             HStack(spacing: 8) {
                 AinkradColorPicker(
                     selection: Binding(
-                        get: { Color(hex: override ?? resolvedHex) }, // design-lint: allow hex-color user-chosen terminal colour (settings data)
+                        get: { Color(hex: override ?? resolvedHex) },  // design-lint: allow hex-color user-chosen terminal colour (settings data)
                         set: { set($0.hexString) }
                     )
                 )
@@ -217,14 +218,14 @@ struct TerminalSettingsView: View {
             VStack(alignment: .leading, spacing: 8) {
                 // Miniature terminal preview.
                 ChamferShape(cut: AinkradRadius.sm)
-                    .fill(Color(hex: preview.background)) // design-lint: allow hex-color user-chosen terminal colour (settings data)
+                    .fill(Color(hex: preview.background))  // design-lint: allow hex-color user-chosen terminal colour (settings data)
                     .frame(height: 40)
                     .overlay(
                         HStack(spacing: 3) {
                             Text(">")
-                                .foregroundStyle(Color(hex: preview.cursor)) // design-lint: allow hex-color user-chosen terminal colour (settings data)
+                                .foregroundStyle(Color(hex: preview.cursor))  // design-lint: allow hex-color user-chosen terminal colour (settings data)
                             Text("ainkrad")
-                                .foregroundStyle(Color(hex: preview.foreground)) // design-lint: allow hex-color user-chosen terminal colour (settings data)
+                                .foregroundStyle(Color(hex: preview.foreground))  // design-lint: allow hex-color user-chosen terminal colour (settings data)
                         }
                         .font(AinkradFont.mono(10))
                         .padding(.horizontal, 8),
@@ -334,7 +335,7 @@ struct TerminalSettingsView: View {
                 if let shellValidationMessage {
                     Text(shellValidationMessage)
                         .font(AinkradFont.display(11))
-                        .foregroundStyle(Color(hex: "E5484D")) // design-lint: allow hex-color user-chosen terminal colour (settings data)
+                        .foregroundStyle(Color(hex: "E5484D"))  // design-lint: allow hex-color user-chosen terminal colour (settings data)
                 } else {
                     Text("Must be listed in /etc/shells. Leave empty to use the login shell.")
                         .font(AinkradFont.display(11))
@@ -390,7 +391,8 @@ struct TerminalSettingsView: View {
 
             toggleRow(
                 label: "Send mouse events to apps",
-                help: "Forward clicks, motion, and the wheel to terminal apps (Claude Code, vim, tmux). Off: mouse stays for native selection and scrollback.",
+                help:
+                    "Forward clicks, motion, and the wheel to terminal apps (Claude Code, vim, tmux). Off: mouse stays for native selection and scrollback.",
                 isOn: Binding(
                     get: { settings.sendMouseEventsToApps },
                     set: { v in settingsStore.update { $0.sendMouseEventsToApps = v } }

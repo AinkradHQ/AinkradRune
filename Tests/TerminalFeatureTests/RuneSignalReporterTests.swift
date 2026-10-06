@@ -1,6 +1,7 @@
-import Testing
-import Foundation
 import AinkradAppKit
+import Foundation
+import Testing
+
 @testable import TerminalFeature
 
 @MainActor
@@ -18,16 +19,22 @@ struct RuneSignalReporterTests {
             let dedupeKey: String?
         }
         private(set) var calls: [Call] = []
-        func emit(kind: String, severity: SignalSeverity, title: String, body: String?,
-                  importance: SignalImportance, deepLink: SignalDeepLink?,
-                  actions: [SignalAction], dedupeKey: String?) {
-            calls.append(Call(kind: kind, deepLink: deepLink, severity: severity,
-                              title: title, body: body,
-                              importance: importance, dedupeKey: dedupeKey))
+        func emit(
+            kind: String, severity: SignalSeverity, title: String, body: String?,
+            importance: SignalImportance, deepLink: SignalDeepLink?,
+            actions: [SignalAction], dedupeKey: String?
+        ) {
+            calls.append(
+                Call(
+                    kind: kind, deepLink: deepLink, severity: severity,
+                    title: title, body: body,
+                    importance: importance, dedupeKey: dedupeKey))
         }
         func own(limit: Int) -> [SignalEvent] { [] }
-        func handleAction(_ actionID: String,
-                          _ handler: @escaping @MainActor () async -> Void) -> AgentActionToken {
+        func handleAction(
+            _ actionID: String,
+            _ handler: @escaping @MainActor () async -> Void
+        ) -> AgentActionToken {
             AgentActionToken()
         }
         func removeActionHandler(_ token: AgentActionToken) {}
@@ -42,8 +49,9 @@ struct RuneSignalReporterTests {
     func cleanLocalExitIsSilent() {
         let (reporter, emitter) = self.reporter()
         reporter.sessionEnded(exitCode: 0, isRemote: false, host: nil, sessionID: UUID())
-        #expect(emitter.calls.isEmpty,
-                "reporting what the user just did is noise, and noise makes the feed unread")
+        #expect(
+            emitter.calls.isEmpty,
+            "reporting what the user just did is noise, and noise makes the feed unread")
     }
 
     @Test("a non-zero local exit is reported as a failure")
@@ -97,8 +105,9 @@ struct RuneSignalReporterTests {
         reporter.startupNotices([], sessionID: UUID())
         #expect(emitter.calls.isEmpty)
 
-        reporter.startupNotices(["Shell /bin/nope not found", "Directory /tmp/gone missing"],
-                                sessionID: UUID())
+        reporter.startupNotices(
+            ["Shell /bin/nope not found", "Directory /tmp/gone missing"],
+            sessionID: UUID())
         #expect(emitter.calls.count == 1)
         #expect(emitter.calls[0].kind == "session.startup-notice")
         #expect(emitter.calls[0].title == "Terminal startup notices")
@@ -110,8 +119,9 @@ struct RuneSignalReporterTests {
     func bellIsSilent() {
         let (reporter, emitter) = self.reporter()
         for _ in 0..<5 { reporter.bellRang(sessionID: UUID()) }
-        #expect(emitter.calls.isEmpty,
-                "shells ring the bell for tab completion; a row per bell was pure noise")
+        #expect(
+            emitter.calls.isEmpty,
+            "shells ring the bell for tab completion; a row per bell was pure noise")
     }
 
     @Test("Claude Code's real hook payload becomes one urgent, clickable event")
@@ -149,8 +159,9 @@ struct RuneSignalReporterTests {
         let session = UUID()
         reporter.agentNotification(
             payload: "conterm-agent:claude:attention:/tmp/t.jsonl", sessionID: session)
-        let payload = String(decoding: emitter.calls[0].deepLink?.payload ?? Data(),
-                             as: UTF8.self)
+        let payload = String(
+            decoding: emitter.calls[0].deepLink?.payload ?? Data(),
+            as: UTF8.self)
         #expect(payload == "\(session.uuidString)|/tmp/t.jsonl")
     }
 
@@ -158,11 +169,13 @@ struct RuneSignalReporterTests {
     func lifecycleIsSilent() {
         let (reporter, emitter) = self.reporter()
         for state in ["start", "prompt", "idle"] {
-            reporter.agentNotification(payload: "conterm-agent:claude:\(state):/tmp/t",
-                                       sessionID: UUID())
+            reporter.agentNotification(
+                payload: "conterm-agent:claude:\(state):/tmp/t",
+                sessionID: UUID())
         }
-        #expect(emitter.calls.isEmpty,
-                "one real session produced eleven of these against three real pings")
+        #expect(
+            emitter.calls.isEmpty,
+            "one real session produced eleven of these against three real pings")
     }
 
     @Test("repeated attention in one session is ONE row, whatever the detail")
@@ -172,8 +185,9 @@ struct RuneSignalReporterTests {
         reporter.agentNotification(payload: "conterm-agent:claude:attention:a", sessionID: id)
         reporter.agentNotification(payload: "conterm-agent:claude:attention:b", sessionID: id)
         reporter.agentNotification(payload: "conterm-agent:claude:attention:c", sessionID: id)
-        #expect(Set(emitter.calls.map(\.dedupeKey)).count == 1,
-                "keying on the title split 'attention' from 'Claude: prompt' into many rows")
+        #expect(
+            Set(emitter.calls.map(\.dedupeKey)).count == 1,
+            "keying on the title split 'attention' from 'Claude: prompt' into many rows")
     }
 
     @Test("finishing is a different row from waiting")
@@ -213,10 +227,11 @@ struct RuneSignalReporterTests {
 @Suite("Terminal session remote host")
 struct TerminalSessionRemoteHostTests {
     private func session(executable: String?, args: [String]?) -> TerminalSession {
-        TerminalSession(workingDirectory: URL(fileURLWithPath: "/tmp"),
-                        shellPath: "/bin/zsh",
-                        launchExecutable: executable,
-                        launchArgs: args)
+        TerminalSession(
+            workingDirectory: URL(fileURLWithPath: "/tmp"),
+            shellPath: "/bin/zsh",
+            launchExecutable: executable,
+            launchArgs: args)
     }
 
     @Test("a local session has no remote host")
@@ -231,15 +246,21 @@ struct TerminalSessionRemoteHostTests {
 
     @Test("the username is stripped — it is not what a notification should say")
     func stripsUsername() {
-        #expect(session(executable: "/usr/bin/ssh",
-                        args: ["deploy@build-box"]).remoteHost == "build-box")
+        #expect(
+            session(
+                executable: "/usr/bin/ssh",
+                args: ["deploy@build-box"]
+            ).remoteHost == "build-box")
     }
 
     @Test("flags before the destination do not confuse it")
     func ignoresFlags() {
         // SSHInvocation.argv puts -i/-p first and the destination last.
-        #expect(session(executable: "/usr/bin/ssh",
-                        args: ["-i", "/k/id", "-p", "2222", "ops@10.0.0.4"]).remoteHost == "10.0.0.4")
+        #expect(
+            session(
+                executable: "/usr/bin/ssh",
+                args: ["-i", "/k/id", "-p", "2222", "ops@10.0.0.4"]
+            ).remoteHost == "10.0.0.4")
     }
 
     @Test("a trailing @ yields nothing rather than an empty host name")

@@ -1,5 +1,5 @@
-import SwiftUI
 import AinkradAppKit
+import SwiftUI
 
 /// Rune as an `AinkradApp` — the SDK contract. Compiled into the host for
 /// now (slice 4a); slice 4b extracts it into its own catalog bundle. Depends
@@ -15,27 +15,30 @@ public struct RuneApp: AinkradApp {
 
     private static func advancedRootView(host: HostServices) -> AnyView {
         TerminalRuntime.registerActions(for: host)
-        return AnyView(TerminalBlockRootView(
-            settingsStore: TerminalRuntime.settingsStore(for: host),
-            contextBridge: TerminalRuntime.contextBridge(for: host),
-            reporter: RuneSignalReporter(signals: host.signals),
-            theme: host.theme,
-            takeLaunch: { RuneLaunch.decode(host.apps.takePendingLaunch()) }
-        ))
+        return AnyView(
+            TerminalBlockRootView(
+                settingsStore: TerminalRuntime.settingsStore(for: host),
+                contextBridge: TerminalRuntime.contextBridge(for: host),
+                reporter: RuneSignalReporter(signals: host.signals),
+                theme: host.theme,
+                takeLaunch: { RuneLaunch.decode(host.apps.takePendingLaunch()) }
+            ))
     }
 
     public static func settingsCatalog(host: HostServices) -> SettingsPage? {
-        TerminalSettingsCatalog.page(store: TerminalRuntime.settingsStore(for: host),
-                                     state: TerminalRuntime.settingsPageState(for: host), theme: host.theme)
+        TerminalSettingsCatalog.page(
+            store: TerminalRuntime.settingsStore(for: host),
+            state: TerminalRuntime.settingsPageState(for: host), theme: host.theme)
     }
 
     public static func makeSettingsView(host: HostServices) -> AnyView {
-        AnyView(TerminalSettingsView(
-            settingsStore: TerminalRuntime.settingsStore(for: host),
-            theme: host.theme,
-            presentation: host.presentation,
-            modeControl: host.mode
-        ))
+        AnyView(
+            TerminalSettingsView(
+                settingsStore: TerminalRuntime.settingsStore(for: host),
+                theme: host.theme,
+                presentation: host.presentation,
+                modeControl: host.mode
+            ))
     }
 
     /// The header matches the terminal window: the resolved scheme background at
@@ -46,7 +49,7 @@ public struct RuneApp: AinkradApp {
             settings: TerminalRuntime.settingsStore(for: host).settings,
             tokens: host.theme.tokens
         )
-        return Color(hex: appearance.background).opacity(appearance.backgroundOpacity) // design-lint: allow hex-color user-chosen terminal colour (settings data)
+        return Color(hex: appearance.background).opacity(appearance.backgroundOpacity)  // design-lint: allow hex-color user-chosen terminal colour (settings data)
     }
 }
 
@@ -81,9 +84,10 @@ extension RuneApp: AinkradAppModes {
             // Actions are NOT registered here. They drive the live terminal
             // session, and basic mode has none — registering them would publish
             // an agent action whose target does not exist.
-            return AnyView(RuneBasicView(
-                settingsStore: TerminalRuntime.settingsStore(for: host),
-                theme: host.theme))
+            return AnyView(
+                RuneBasicView(
+                    settingsStore: TerminalRuntime.settingsStore(for: host),
+                    theme: host.theme))
         case .advanced:
             return advancedRootView(host: host)
         // Resilient enum: fall back to advanced, never to a stripped view for a

@@ -1,5 +1,5 @@
-import SwiftUI
 import AinkradAppKit
+import SwiftUI
 
 /// Terminal's root view for a Block: creates its `TerminalSession` on first
 /// appearance and hosts it via `TerminalContainerView`. Reads the injected
@@ -36,8 +36,9 @@ struct TerminalBlockRootView: View {
                     if !session.startupNotices.isEmpty && !isNoticeDismissed {
                         noticeBanner(session.startupNotices)
                     }
-                    TerminalContainerView(session: session, appearance: appearance,
-                                          contextBridge: contextBridge, reporter: reporter)
+                    TerminalContainerView(
+                        session: session, appearance: appearance,
+                        contextBridge: contextBridge, reporter: reporter)
                 }
             } else {
                 Color.clear
@@ -77,7 +78,9 @@ struct TerminalBlockRootView: View {
                 }
             }
             Spacer()
-            Button { isNoticeDismissed = true } label: {
+            Button {
+                isNoticeDismissed = true
+            } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 9, weight: .semibold))
                     .foregroundStyle(tokens.foreground.opacity(0.5))

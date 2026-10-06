@@ -1,5 +1,5 @@
-import Foundation
 import AinkradAppKit
+import Foundation
 
 /// Rune's notification vocabulary, in one place so the kinds stay consistent
 /// and every emission decision is visible together.

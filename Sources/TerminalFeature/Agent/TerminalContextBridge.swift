@@ -1,5 +1,5 @@
-import Foundation
 import AinkradAppKit
+import Foundation
 
 /// The minimal read-only surface `TerminalContextBridge` needs from a live
 /// terminal. Kept as a protocol (not the concrete AppKit view) so the bridge is

@@ -1,6 +1,7 @@
-import Testing
-import Foundation
 import AinkradAppKit
+import Foundation
+import Testing
+
 @testable import TerminalFeature
 
 @Suite("TerminalContextRegistration")
@@ -19,7 +20,7 @@ struct TerminalContextRegistrationTests {
         let registry = RecordingContextRegistry()
         let host = FakeHostServices(context: registry)
         _ = TerminalRuntime.contextBridge(for: host)
-        _ = TerminalRuntime.contextBridge(for: host)   // second call must not re-register
+        _ = TerminalRuntime.contextBridge(for: host)  // second call must not re-register
         #expect(registry.sources.count == 1)
     }
 
@@ -29,7 +30,7 @@ struct TerminalContextRegistrationTests {
         let host = FakeHostServices(context: registry)
         let bridge = TerminalRuntime.contextBridge(for: host)
 
-        #expect(registry.snapshots().isEmpty)          // no active view yet → nil, compacted away
+        #expect(registry.snapshots().isEmpty)  // no active view yet → nil, compacted away
         // Bound to a local: the bridge holds the source weakly (a live view is
         // retained by the view hierarchy), so a temporary would deallocate before
         // `snapshot()` reads it.
@@ -44,8 +45,10 @@ struct TerminalContextRegistrationTests {
 
     @Test("different hosts get different bridges and registrations")
     func differentHostsDifferentBridges() {
-        let r1 = RecordingContextRegistry(); let h1 = FakeHostServices(context: r1)
-        let r2 = RecordingContextRegistry(); let h2 = FakeHostServices(context: r2)
+        let r1 = RecordingContextRegistry()
+        let h1 = FakeHostServices(context: r1)
+        let r2 = RecordingContextRegistry()
+        let h2 = FakeHostServices(context: r2)
         let b1 = TerminalRuntime.contextBridge(for: h1)
         let b2 = TerminalRuntime.contextBridge(for: h2)
         #expect(b1 !== b2)

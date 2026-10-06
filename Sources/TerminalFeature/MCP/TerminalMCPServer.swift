@@ -1,5 +1,5 @@
-import Foundation
 import AinkradAppKit
+import Foundation
 
 /// Publishes Terminal's read side to the host assistant as MCP resources.
 ///
@@ -47,7 +47,8 @@ enum TerminalMCPServer {
     /// registrations here, but the failure mode (a URI collision after an edit)
     /// is identical and equally silent.
     static func make(appID: String, bridge: TerminalContextBridge)
-        -> (server: MCPAppServer, failures: [String]) {
+        -> (server: MCPAppServer, failures: [String])
+    {
         let server = MCPAppServer(appID: appID)
         var failures: [String] = []
 

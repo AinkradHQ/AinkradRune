@@ -1,6 +1,6 @@
-import SwiftUI
 import AppKit
 import SwiftTerm
+import SwiftUI
 
 private struct PaneResizesImmediatelyKey: EnvironmentKey {
     static let defaultValue = false
@@ -171,25 +171,26 @@ struct TerminalContainerView: NSViewRepresentable {
         guard coordinator.appliedAppearance != appearance else { return }
         coordinator.appliedAppearance = appearance
 
-        let palette = appearance.ansi.compactMap(Self.terminalColor(hex:)) // design-lint: allow hex-color user-chosen terminal colour (settings data)
+        let palette = appearance.ansi.compactMap(Self.terminalColor(hex:))  // design-lint: allow hex-color user-chosen terminal colour (settings data)
         if palette.count == 16 {
             view.installColors(palette)
         }
         // Translucent background lets the SwiftUI Material behind this view
         // (the blurred island/sky) show through. The layer must be non-opaque.
         let isTranslucent = appearance.backgroundOpacity < 1
-        view.nativeBackgroundColor = Self.nsColor(hex: appearance.background) // design-lint: allow hex-color user-chosen terminal colour (settings data)
+        view.nativeBackgroundColor = Self.nsColor(hex: appearance.background)  // design-lint: allow hex-color user-chosen terminal colour (settings data)
             .withAlphaComponent(CGFloat(appearance.backgroundOpacity))
         view.wantsLayer = true
         view.layer?.isOpaque = !isTranslucent
         view.layer?.backgroundColor = .clear
-        view.nativeForegroundColor = Self.nsColor(hex: appearance.foreground) // design-lint: allow hex-color user-chosen terminal colour (settings data)
-        view.caretColor = Self.nsColor(hex: appearance.cursor) // design-lint: allow hex-color user-chosen terminal colour (settings data)
-        view.selectedTextBackgroundColor = Self.nsColor(hex: appearance.selection) // design-lint: allow hex-color user-chosen terminal colour (settings data)
+        view.nativeForegroundColor = Self.nsColor(hex: appearance.foreground)  // design-lint: allow hex-color user-chosen terminal colour (settings data)
+        view.caretColor = Self.nsColor(hex: appearance.cursor)  // design-lint: allow hex-color user-chosen terminal colour (settings data)
+        view.selectedTextBackgroundColor = Self.nsColor(hex: appearance.selection)  // design-lint: allow hex-color user-chosen terminal colour (settings data)
         view.font = Self.font(family: appearance.fontFamily, size: appearance.fontSize)
         view.optionAsMetaKey = appearance.optionAsMeta
         view.allowMouseReporting = appearance.sendMouseEventsToApps
-        view.getTerminal().setCursorStyle(Self.cursorStyle(shape: appearance.cursorShape, blink: appearance.cursorBlink))
+        view.getTerminal().setCursorStyle(
+            Self.cursorStyle(shape: appearance.cursorShape, blink: appearance.cursorBlink))
 
         // Rebuilding history is comparatively heavy — only when it changes.
         if coordinator.appliedScrollback != appearance.scrollback {
@@ -218,7 +219,7 @@ struct TerminalContainerView: NSViewRepresentable {
         return (UInt8((int >> 16) & 0xFF), UInt8((int >> 8) & 0xFF), UInt8(int & 0xFF))
     }
 
-    private static func nsColor(hex: String) -> NSColor { // design-lint: allow hex-color user-chosen terminal colour (settings data)
+    private static func nsColor(hex: String) -> NSColor {  // design-lint: allow hex-color user-chosen terminal colour (settings data)
         guard let c = rgb(hex: hex) else { return .black }
         return NSColor(
             srgbRed: CGFloat(c.r) / 255,
@@ -228,7 +229,7 @@ struct TerminalContainerView: NSViewRepresentable {
         )
     }
 
-    private static func terminalColor(hex: String) -> SwiftTerm.Color? { // design-lint: allow hex-color user-chosen terminal colour (settings data)
+    private static func terminalColor(hex: String) -> SwiftTerm.Color? {  // design-lint: allow hex-color user-chosen terminal colour (settings data)
         guard let c = rgb(hex: hex) else { return nil }
         // SwiftTerm.Color components are 16-bit; scale 8-bit up by 257.
         return SwiftTerm.Color(red: UInt16(c.r) * 257, green: UInt16(c.g) * 257, blue: UInt16(c.b) * 257)
@@ -263,8 +264,10 @@ struct TerminalContainerView: NSViewRepresentable {
         private var scrollMonitor: Any?
         private var hideWork: DispatchWorkItem?
 
-        init(session: TerminalSession, contextBridge: TerminalContextBridge,
-             reporter: RuneSignalReporter) {
+        init(
+            session: TerminalSession, contextBridge: TerminalContextBridge,
+            reporter: RuneSignalReporter
+        ) {
             self.session = session
             self.contextBridge = contextBridge
             self.reporter = reporter
@@ -330,10 +333,11 @@ struct TerminalContainerView: NSViewRepresentable {
                 session.terminate()
                 // Reported after `terminate()`, so the session is already in its
                 // final state if anything reads it from the feed.
-                reporter.sessionEnded(exitCode: exitCode,
-                                      isRemote: session.launchExecutable != nil,
-                                      host: session.remoteHost,
-                                      sessionID: session.id)
+                reporter.sessionEnded(
+                    exitCode: exitCode,
+                    isRemote: session.launchExecutable != nil,
+                    host: session.remoteHost,
+                    sessionID: session.id)
             }
         }
     }

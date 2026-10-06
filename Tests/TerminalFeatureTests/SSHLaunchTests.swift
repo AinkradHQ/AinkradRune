@@ -1,4 +1,5 @@
 import Testing
+
 @testable import TerminalFeature
 
 @Suite("SSHLaunch")
@@ -6,7 +7,10 @@ struct SSHLaunchTests {
     @Test("decodes a valid ssh payload")
     func decodes() {
         let l = SSHLaunch(json: #"{"kind":"ssh","host":"h","port":2222,"username":"u","identityFile":"/k"}"#)
-        #expect(l?.host == "h"); #expect(l?.port == 2222); #expect(l?.username == "u"); #expect(l?.identityFile == "/k")
+        #expect(l?.host == "h")
+        #expect(l?.port == 2222)
+        #expect(l?.username == "u")
+        #expect(l?.identityFile == "/k")
     }
     @Test("rejects nil, malformed, or wrong-kind payloads")
     func rejects() {
