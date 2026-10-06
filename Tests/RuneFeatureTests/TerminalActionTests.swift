@@ -11,8 +11,8 @@ struct TerminalActionTests {
     func registersOnce() {
         let actions = RecordingActionRegistry()
         let host = FakeHostServices(context: RecordingContextRegistry(), actions: actions)
-        TerminalRuntime.registerActions(for: host)
-        TerminalRuntime.registerActions(for: host)
+        RuneRuntime.registerActions(for: host)
+        RuneRuntime.registerActions(for: host)
         #expect(actions.ids.values.filter { $0 == "terminal.echo" }.count == 1)
     }
 
@@ -21,8 +21,8 @@ struct TerminalActionTests {
         let actions = RecordingActionRegistry()
         let host = FakeHostServices(context: RecordingContextRegistry(), actions: actions)
         let source = FakeBufferSource(buffer: "x")
-        TerminalRuntime.contextBridge(for: host).setActiveSource(source)
-        TerminalRuntime.registerActions(for: host)
+        RuneRuntime.contextBridge(for: host).setActiveSource(source)
+        RuneRuntime.registerActions(for: host)
         let json = "{\"command\":\"ls\",\"output\":\"a\\nb\"}"
         let result = await actions.invoke(actionID: "terminal.echo", input: json)
         #expect(result?.isError == false)

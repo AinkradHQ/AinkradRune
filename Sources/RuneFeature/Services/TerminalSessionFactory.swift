@@ -67,7 +67,7 @@ struct TerminalSessionFactory {
 
     func makeSession(launch: SSHLaunch? = nil) -> TerminalSession {
         let resolved = resolve()
-        AinkradLog.logger(app: "rune", area: "session").info(
+        Log.session.info(
             "Terminal session resolved: shell \(resolved.shellPath, privacy: .public), cwd \(resolved.workingDirectory.path, privacy: .public), \(resolved.notices.count) notice(s)"
         )
         return TerminalSession(

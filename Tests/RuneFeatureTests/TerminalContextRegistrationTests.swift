@@ -10,8 +10,8 @@ struct TerminalContextRegistrationTests {
     @Test("same host returns the same bridge (get-or-create)")
     func sameHostSameBridge() {
         let host = FakeHostServices(context: RecordingContextRegistry())
-        let a = TerminalRuntime.contextBridge(for: host)
-        let b = TerminalRuntime.contextBridge(for: host)
+        let a = RuneRuntime.contextBridge(for: host)
+        let b = RuneRuntime.contextBridge(for: host)
         #expect(a === b)
     }
 
@@ -19,8 +19,8 @@ struct TerminalContextRegistrationTests {
     func registersOnce() {
         let registry = RecordingContextRegistry()
         let host = FakeHostServices(context: registry)
-        _ = TerminalRuntime.contextBridge(for: host)
-        _ = TerminalRuntime.contextBridge(for: host)  // second call must not re-register
+        _ = RuneRuntime.contextBridge(for: host)
+        _ = RuneRuntime.contextBridge(for: host)  // second call must not re-register
         #expect(registry.sources.count == 1)
     }
 
@@ -28,7 +28,7 @@ struct TerminalContextRegistrationTests {
     func registeredSourceReflectsBridge() {
         let registry = RecordingContextRegistry()
         let host = FakeHostServices(context: registry)
-        let bridge = TerminalRuntime.contextBridge(for: host)
+        let bridge = RuneRuntime.contextBridge(for: host)
 
         #expect(registry.snapshots().isEmpty)  // no active view yet → nil, compacted away
         // Bound to a local: the bridge holds the source weakly (a live view is
@@ -49,8 +49,8 @@ struct TerminalContextRegistrationTests {
         let h1 = FakeHostServices(context: r1)
         let r2 = RecordingContextRegistry()
         let h2 = FakeHostServices(context: r2)
-        let b1 = TerminalRuntime.contextBridge(for: h1)
-        let b2 = TerminalRuntime.contextBridge(for: h2)
+        let b1 = RuneRuntime.contextBridge(for: h1)
+        let b2 = RuneRuntime.contextBridge(for: h2)
         #expect(b1 !== b2)
         #expect(r1.sources.count == 1)
         #expect(r2.sources.count == 1)

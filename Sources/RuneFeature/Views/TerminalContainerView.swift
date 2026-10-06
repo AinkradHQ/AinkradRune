@@ -118,7 +118,9 @@ struct TerminalContainerView: NSViewRepresentable {
                 currentDirectory: session.workingDirectory.path
             )
         }
-        // Safety net: if a valid layout never arrives, start anyway.
+        // Safety net: if a valid layout never arrives, start anyway. A one-shot
+        // deliberate delay on the main queue; `[weak view]` makes it a no-op once
+        // the pane is gone, so there is nothing to cancel.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak view] in
             view?.startIfNeeded()
         }
@@ -241,7 +243,7 @@ struct TerminalContainerView: NSViewRepresentable {
         private weak var terminalView: NSView?
         private weak var scroller: NSScroller?
         private var scrollMonitor: Any?
-        private var hideWork: DispatchWorkItem?
+        private var hideTask: Task<Void, Never>?
 
         init(
             session: TerminalSession, contextBridge: TerminalContextBridge,
@@ -275,14 +277,16 @@ struct TerminalContainerView: NSViewRepresentable {
             guard view.bounds.contains(point) else { return }
 
             scroller.isHidden = false
-            hideWork?.cancel()
-            let work = DispatchWorkItem { [weak scroller] in scroller?.isHidden = true }
-            hideWork = work
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.1, execute: work)
+            hideTask?.cancel()
+            hideTask = Task { @MainActor [weak scroller] in
+                try? await Task.sleep(for: .seconds(1.1))  // cancelled by the next scroll or teardown
+                guard !Task.isCancelled else { return }
+                scroller?.isHidden = true
+            }
         }
 
         func teardown() {
-            hideWork?.cancel()
+            hideTask?.cancel()
             if let scrollMonitor {
                 NSEvent.removeMonitor(scrollMonitor)
                 self.scrollMonitor = nil

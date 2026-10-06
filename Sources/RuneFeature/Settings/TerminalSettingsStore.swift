@@ -16,7 +16,7 @@ final class TerminalSettingsStore {
     init(documents: PluginDocumentStore) {
         self.documents = documents
         let loaded = loadDocument(
-            TerminalSettings.self, key: Self.key, from: documents, app: "rune")
+            TerminalSettings.self, key: Self.key, from: documents)
         self.settings = loaded.value ?? TerminalSettings()
         self.canSave = loaded.canSave
     }
@@ -27,13 +27,11 @@ final class TerminalSettingsStore {
         mutate(&updated)
         settings = updated
         guard canSave else {
-            AinkradLog.logger(app: "rune", area: "persistence")
-                .error("saving is off: the loaded document did not decode and could not be set aside")
+            Log.persistence.error("saving is off: the loaded document did not decode and could not be set aside")
             return
         }
         guard let data = try? JSONEncoder().encode(updated) else {
-            AinkradLog.logger(app: "rune", area: "persistence")
-                .error("could not encode terminal settings; not saving")
+            Log.persistence.error("could not encode terminal settings; not saving")
             return
         }
         documents.setData(data, forKey: Self.key)

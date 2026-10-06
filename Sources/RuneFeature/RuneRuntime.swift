@@ -8,7 +8,7 @@ import Foundation
 /// running terminals live. Keyed by host object identity (the host is always a
 /// reference type — `HostServicesImpl`).
 @MainActor
-enum TerminalRuntime {
+enum RuneRuntime {
     private static let stores = PluginInstanceStorage<TerminalSettingsStore>()
     private static let bridges = PluginInstanceStorage<TerminalContextBridge>()
     private static let contextTokens = PluginInstanceStorage<PluginContextToken>()
@@ -43,7 +43,10 @@ enum TerminalRuntime {
     }
 
     static func settingsStore(for host: HostServices) -> TerminalSettingsStore {
-        stores.value(for: instance(of: host)) { TerminalSettingsStore(documents: host.documents) }
+        // Every root view and settings page reads the store first, so this is
+        // the earliest point the bundled render font is needed (once-token).
+        TerminalFonts.registerBundledFonts()
+        return stores.value(for: instance(of: host)) { TerminalSettingsStore(documents: host.documents) }
     }
 
     /// The per-host agent-context bridge. Created and **registered with the host
