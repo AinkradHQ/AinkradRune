@@ -3,14 +3,12 @@ import AppKit
 import SwiftUI
 
 extension Color {
-    /// Creates a `Color` from a 6-digit RRGGBB hex string (no `#` prefix).
+    /// Creates a `Color` from a 6-digit RRGGBB hex string, `#` optional.
+    /// Parsed by `TerminalContainerView.rgb(hex:)`, the one hex parser, so the
+    /// header and the terminal never disagree; malformed input is black.
     init(hex: String) {
-        var value: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&value)
-        let r = Double((value & 0xFF0000) >> 16) / 255
-        let g = Double((value & 0x00FF00) >> 8) / 255
-        let b = Double(value & 0x0000FF) / 255
-        self = Color(red: r, green: g, blue: b)
+        let c = TerminalContainerView.rgb(hex: hex) ?? (0, 0, 0)
+        self = Color(red: Double(c.r) / 255, green: Double(c.g) / 255, blue: Double(c.b) / 255)
     }
 
     /// The color as an uppercase 6-digit RRGGBB hex string (no `#`), or nil if
