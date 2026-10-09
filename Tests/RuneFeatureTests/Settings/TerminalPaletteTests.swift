@@ -1,40 +1,37 @@
+import AinkradAppKit
 import Testing
 
 @testable import RuneFeature
 
-/// The Match-Theme palette assertions, moved out of the host `DesignTokensTests`.
-/// The host `Theme` enum doesn't exist in this repo, so the seven theme ids are
-/// listed directly (they are the host `Theme` raw values / SDK `themeID`s).
-@Suite("TerminalMatchThemePalette")
+/// RUNE-5: Match App Theme renders `host.theme.terminalPalette`, with Neon Blue
+/// standing in for anything the host did not send.
+@Suite("Match Theme palette")
 struct TerminalPaletteTests {
-    private let themeIDs = ["neonBlue", "cyberPurple", "dracula", "nord", "tokyoNight", "gruvbox", "solarizedDark"]
+    private let neonBlue = PaletteOracle.hostPalettes[0]
 
-    @Test("every theme id resolves to a 16-color palette with a distinct background")
-    func everyThemeResolves() {
-        var backgrounds = Set<String>()
-        for id in themeIDs {
-            let palette = TerminalMatchThemePalette.forThemeID(id)
-            #expect(palette.ansi.count == 16)
-            backgrounds.insert(palette.background)
-        }
-        #expect(backgrounds.count == themeIDs.count)
+    @Test("a host that publishes no palette gets Neon Blue")
+    func nilFallsBack() {
+        let p = TerminalAppearanceResolver.matchPalette(nil)
+        #expect(p.background == neonBlue.bg && p.foreground == neonBlue.fg && p.cursor == neonBlue.cursor)
+        #expect(p.ansi == neonBlue.ansi)
     }
 
-    @Test("an unknown theme id falls back to the default (neonBlue) palette")
-    func unknownFallsBack() {
-        let fallback = TerminalMatchThemePalette.forThemeID("does-not-exist")
-        let dflt = TerminalMatchThemePalette.forThemeID("neonBlue")
-        #expect(fallback.background == dflt.background)
-        #expect(fallback.background == TerminalMatchThemePalette.fallback.background)
-        #expect(fallback.ansi.count == 16)
+    @Test("the host's colours are used as sent")
+    func hostColoursPassThrough() throws {
+        let host = try #require(palette(themeID: "dracula"))
+        let p = TerminalAppearanceResolver.matchPalette(host)
+        #expect(p.background == host.background && p.foreground == host.foreground && p.cursor == host.cursor)
+        #expect(p.ansi == host.ansi)
     }
 
-    @Test("an empty or wrongly-cased theme id returns the stored fallback without crashing")
-    func malformedIDsFallBack() {
-        for id in ["", "NEONBLUE", "Dracula", " nord"] {
-            let palette = TerminalMatchThemePalette.forThemeID(id)
-            #expect(palette.background == TerminalMatchThemePalette.fallback.background)
-            #expect(palette.cursor == TerminalMatchThemePalette.fallback.cursor)
-        }
+    @Test("empty fields and a short ANSI list fall back entry by entry")
+    func emptyFieldsFallBack() {
+        var ansi = Array(repeating: "", count: 3)
+        ansi[1] = "FF0000"
+        let host = HostTerminalPalette(background: "", foreground: "FFFFFF", cursor: "", selection: "", ansi: ansi)
+        let p = TerminalAppearanceResolver.matchPalette(host)
+        #expect(p.background == neonBlue.bg && p.cursor == neonBlue.cursor && p.foreground == "FFFFFF")
+        #expect(p.ansi.count == 16)
+        #expect(p.ansi[0] == neonBlue.ansi[0] && p.ansi[1] == "FF0000" && p.ansi[15] == neonBlue.ansi[15])
     }
 }

@@ -32,22 +32,25 @@ struct TerminalRenderAppearance: Equatable {
     let sendMouseEventsToApps: Bool
 }
 
-/// Pure resolution of `TerminalSettings` (+ the active theme's tokens) into a
-/// concrete `TerminalRenderAppearance`. No AppKit here — kept unit-testable.
+/// Pure resolution of `TerminalSettings` (+ the palette the host publishes for
+/// the active theme) into a concrete `TerminalRenderAppearance`. No AppKit here —
+/// kept unit-testable.
 enum TerminalAppearanceResolver {
     static let defaultFontFamily = "MesloLGS NF"
     static let defaultFontSize: Double = 15
     static let defaultSelection = "3B4252"
 
-    static func resolve(settings: TerminalSettings, tokens: HostThemeTokens) -> TerminalRenderAppearance {
+    /// `palette` is `host.theme.terminalPalette`: what Match App Theme renders with.
+    static func resolve(settings: TerminalSettings, palette: HostTerminalPalette?) -> TerminalRenderAppearance {
         let scheme = TerminalColorScheme.scheme(id: settings.colorSchemeID)
-        let themed = TerminalMatchThemePalette.forThemeID(tokens.themeID)
+        let matchesTheme = scheme.id == TerminalColorScheme.matchThemeID
+        let themed = matchPalette(palette)
         return TerminalRenderAppearance(
             background: scheme.background ?? themed.background,
             foreground: scheme.foreground ?? themed.foreground,
             cursor: settings.cursorColor ?? scheme.cursor ?? themed.cursor,
             selection: settings.selectionColor ?? defaultSelection,
-            ansi: scheme.id == TerminalColorScheme.matchThemeID ? themed.ansi : scheme.ansi,
+            ansi: matchesTheme ? themed.ansi : scheme.ansi,
             fontFamily: settings.fontFamily ?? defaultFontFamily,
             fontSize: settings.fontSize ?? defaultFontSize,
             cursorShape: settings.cursorShape,
@@ -57,5 +60,21 @@ enum TerminalAppearanceResolver {
             backgroundOpacity: min(1, max(0.2, settings.backgroundOpacity)),
             sendMouseEventsToApps: settings.sendMouseEventsToApps
         )
+    }
+
+    /// The host's palette, field by field, with Neon Blue wherever it sent nothing
+    /// (its `selection` is not used: the default selection stays, as before RUNE-5):
+    /// `nil` from a host that publishes none, `""` for a token with no fixed colour.
+    static func matchPalette(_ host: HostTerminalPalette?) -> HostTerminalPalette {
+        func pick(_ value: String?, _ fallback: String) -> String {
+            guard let value, !value.isEmpty else { return fallback }
+            return value
+        }
+        let fallbackANSI = TerminalColorScheme.matchTheme.ansi
+        let hostANSI = host?.ansi ?? []
+        return HostTerminalPalette(
+            background: pick(host?.background, "0A0E17"), foreground: pick(host?.foreground, "E2E8F0"),
+            cursor: pick(host?.cursor, "22D3EE"), selection: defaultSelection,
+            ansi: fallbackANSI.indices.map { pick(hostANSI.indices.contains($0) ? hostANSI[$0] : nil, fallbackANSI[$0]) })
     }
 }

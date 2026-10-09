@@ -3,9 +3,17 @@ import Foundation
 
 @testable import RuneFeature
 
-/// Builds a `HostThemeTokens` snapshot with the given theme id. Match-Theme
-/// resolution reads only `tokens.themeID`, so the color values are irrelevant
-/// to these assertions — black stands in for all of them.
+/// The palette a host publishes for `themeID` (`host.theme.terminalPalette`),
+/// taken from the parity oracle's rows; `nil` for an id the host has no row for,
+/// like a host that publishes none.
+func palette(themeID: String) -> HostTerminalPalette? {
+    PaletteOracle.hostPalettes.first { $0.id == themeID }.map {
+        HostTerminalPalette(background: $0.bg, foreground: $0.fg, cursor: $0.cursor, selection: "264F78", ansi: $0.ansi)
+    }
+}
+
+/// Builds a `HostThemeTokens` snapshot with the given theme id; black stands in
+/// for every colour.
 func tokens(themeID: String) -> HostThemeTokens {
     HostThemeTokens(
         themeID: themeID, background: .black, surface: .black, surfaceElevated: .black,

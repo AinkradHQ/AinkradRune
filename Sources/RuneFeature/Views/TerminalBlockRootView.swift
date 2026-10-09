@@ -27,7 +27,7 @@ struct TerminalBlockRootView: View {
     var body: some View {
         let appearance = TerminalAppearanceResolver.resolve(
             settings: settingsStore.settings,
-            tokens: theme.tokens
+            palette: theme.terminalPalette
         )
 
         return Group {

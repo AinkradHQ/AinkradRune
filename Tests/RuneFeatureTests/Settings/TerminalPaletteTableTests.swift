@@ -2,27 +2,10 @@ import Testing
 
 @testable import RuneFeature
 
-/// Pins every row of today's terminal palette data (RUNE-2 characterisation).
+/// Pins every row of today's terminal scheme data (RUNE-2 characterisation). Match
+/// Theme's colours are the host's since RUNE-5 (`TerminalPaletteTests`).
 @Suite("Terminal palette table")
 struct TerminalPaletteTableTests {
-    @Test("each host palette row matches today's bg, fg, cursor and 16 ANSI colours")
-    func hostPaletteRows() {
-        for row in PaletteOracle.hostPalettes {
-            let p = TerminalMatchThemePalette.forThemeID(row.id)
-            #expect(p.background == row.bg, "\(row.id) background")
-            #expect(p.foreground == row.fg, "\(row.id) foreground")
-            #expect(p.cursor == row.cursor, "\(row.id) cursor")
-            #expect(p.ansi == row.ansi, "\(row.id) ansi")
-        }
-    }
-
-    @Test("neonBlue is the stored fallback palette, unchanged")
-    func fallbackIsNeonBlue() {
-        let f = TerminalMatchThemePalette.fallback
-        #expect(f.background == "0A0E17" && f.foreground == "E2E8F0" && f.cursor == "22D3EE")
-        #expect(f.ansi == PaletteOracle.matchThemeANSI)
-    }
-
     @Test("there are exactly nine schemes, in picker order, with unique ids")
     func schemeList() {
         #expect(TerminalColorScheme.all.map(\.id) == PaletteOracle.schemes.map(\.id))
