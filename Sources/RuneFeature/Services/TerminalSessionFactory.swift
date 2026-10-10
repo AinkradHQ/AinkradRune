@@ -65,13 +65,15 @@ struct TerminalSessionFactory {
         return Resolution(shellPath: shellPath, workingDirectory: resolution.url, notices: notices)
     }
 
-    func makeSession(launch: SSHLaunch? = nil) -> TerminalSession {
+    /// `directory`, when given, wins over the configured working directory
+    /// (a launch asked for that folder specifically).
+    func makeSession(launch: SSHLaunch? = nil, directory: URL? = nil) -> TerminalSession {
         let resolved = resolve()
         Log.session.info(
             "Terminal session resolved: shell \(resolved.shellPath, privacy: .public), cwd \(resolved.workingDirectory.path, privacy: .public), \(resolved.notices.count) notice(s)"
         )
         return TerminalSession(
-            workingDirectory: resolved.workingDirectory,
+            workingDirectory: directory ?? resolved.workingDirectory,
             shellPath: resolved.shellPath,
             startupNotices: resolved.notices,
             launchExecutable: launch.map { _ in SSHInvocation.executable },

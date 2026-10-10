@@ -23,6 +23,13 @@ enum RuneLaunch: Equatable {
     /// recognised rather than silently consumed, and so a future Rune can act
     /// on it without another seam change.
     case document(AinkradLaunchIntent)
+    /// Open the shell in this folder — e.g. Grimoire's terminal button, for
+    /// the folder (or worktree) a thread works in.
+    case directory(URL)
+
+    /// The intent `kind` that asks for `.directory`. Senders build an
+    /// `AinkradLaunchIntent(kind: RuneLaunch.openDirectoryKind, path:)`.
+    static let openDirectoryKind = "openDirectory"
 
     /// Classifies a raw payload. Returns nil when it is not a launch Rune
     /// understands — which is a normal outcome, not a failure.
@@ -32,8 +39,17 @@ enum RuneLaunch: Equatable {
         // without guessing. Checked first for that reason: the SSH payload has
         // no kind field, so it can only be recognised by shape, and
         // shape-matching is the weaker test of the two.
-        if let intent = AinkradLaunchIntent.decode(json), intent.isOpenDocument {
-            return .document(intent)
+        if let intent = AinkradLaunchIntent.decode(json) {
+            if intent.isOpenDocument { return .document(intent) }
+            if intent.kind == openDirectoryKind {
+                // A folder that no longer exists is not a launch: the shell
+                // starts where it normally would instead of failing.
+                var isDirectory: ObjCBool = false
+                guard FileManager.default.fileExists(atPath: intent.path, isDirectory: &isDirectory),
+                    isDirectory.boolValue
+                else { return nil }
+                return .directory(URL(fileURLWithPath: intent.path))
+            }
         }
         if let ssh = SSHLaunch.pending(from: json) {
             return .ssh(ssh)
@@ -45,6 +61,12 @@ enum RuneLaunch: Equatable {
     /// keep taking exactly what it took before.
     var sshPayload: SSHLaunchPayload? {
         if case .ssh(let payload) = self { return payload }
+        return nil
+    }
+
+    /// The folder to start in, when that is what this is.
+    var directory: URL? {
+        if case .directory(let url) = self { return url }
         return nil
     }
 }
