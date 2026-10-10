@@ -47,11 +47,11 @@ final class TerminalSettingsTests {
         var settings = TerminalSettings()
         settings.backgroundOpacity = 0.05
         #expect(
-            TerminalAppearanceResolver.resolve(settings: settings, tokens: tokens(themeID: "neonBlue"))
+            TerminalAppearanceResolver.resolve(settings: settings, palette: palette(themeID: "neonBlue"))
                 .backgroundOpacity == 0.2)
         settings.backgroundOpacity = 0.7
         #expect(
-            TerminalAppearanceResolver.resolve(settings: settings, tokens: tokens(themeID: "neonBlue"))
+            TerminalAppearanceResolver.resolve(settings: settings, palette: palette(themeID: "neonBlue"))
                 .backgroundOpacity == 0.7)
     }
 
@@ -106,13 +106,11 @@ struct TerminalAppearanceResolverTests {
 
     @Test("Match Theme derives the terminal colors from the active app theme")
     func matchThemeFollowsTheme() {
-        let blue = TerminalAppearanceResolver.resolve(
-            settings: TerminalSettings(), tokens: tokens(themeID: "neonBlue"))
+        let blue = TerminalAppearanceResolver.resolve(settings: TerminalSettings(), palette: palette(themeID: "neonBlue"))
         #expect(blue.background == "0A0E17")
         #expect(blue.foreground == "E2E8F0")
 
-        let purple = TerminalAppearanceResolver.resolve(
-            settings: TerminalSettings(), tokens: tokens(themeID: "cyberPurple"))
+        let purple = TerminalAppearanceResolver.resolve(settings: TerminalSettings(), palette: palette(themeID: "cyberPurple"))
         #expect(purple.background == "080814")
     }
 
@@ -120,8 +118,8 @@ struct TerminalAppearanceResolverTests {
     func namedSchemeIgnoresTheme() {
         var settings = TerminalSettings()
         settings.colorSchemeID = "dracula"
-        let a = TerminalAppearanceResolver.resolve(settings: settings, tokens: tokens(themeID: "neonBlue"))
-        let b = TerminalAppearanceResolver.resolve(settings: settings, tokens: tokens(themeID: "cyberPurple"))
+        let a = TerminalAppearanceResolver.resolve(settings: settings, palette: palette(themeID: "neonBlue"))
+        let b = TerminalAppearanceResolver.resolve(settings: settings, palette: palette(themeID: "cyberPurple"))
         #expect(a.background == b.background)
         #expect(a.background == "282A36")  // Dracula background
     }
@@ -129,24 +127,24 @@ struct TerminalAppearanceResolverTests {
     @Test("Every resolved appearance carries a full 16-color ANSI palette")
     func ansiPaletteHasSixteen() {
         #expect(
-            TerminalAppearanceResolver.resolve(settings: TerminalSettings(), tokens: tokens(themeID: "neonBlue")).ansi
+            TerminalAppearanceResolver.resolve(settings: TerminalSettings(), palette: palette(themeID: "neonBlue")).ansi
                 .count == 16)
         var dracula = TerminalSettings()
         dracula.colorSchemeID = "dracula"
         #expect(
-            TerminalAppearanceResolver.resolve(settings: dracula, tokens: tokens(themeID: "neonBlue")).ansi.count == 16)
+            TerminalAppearanceResolver.resolve(settings: dracula, palette: palette(themeID: "neonBlue")).ansi.count == 16)
     }
 
     @Test("Font falls back to defaults when unset, and passes explicit values through")
     func fontResolution() {
-        let dflt = TerminalAppearanceResolver.resolve(settings: TerminalSettings(), tokens: tokens(themeID: "neonBlue"))
+        let dflt = TerminalAppearanceResolver.resolve(settings: TerminalSettings(), palette: palette(themeID: "neonBlue"))
         #expect(dflt.fontFamily == "MesloLGS NF")
         #expect(dflt.fontSize == 15)
 
         var custom = TerminalSettings()
         custom.fontFamily = "Menlo"
         custom.fontSize = 16
-        let resolved = TerminalAppearanceResolver.resolve(settings: custom, tokens: tokens(themeID: "neonBlue"))
+        let resolved = TerminalAppearanceResolver.resolve(settings: custom, palette: palette(themeID: "neonBlue"))
         #expect(resolved.fontFamily == "Menlo")
         #expect(resolved.fontSize == 16)
     }
@@ -163,7 +161,7 @@ struct TerminalAppearanceResolverTests {
         settings.cursorBlink = false
         settings.optionAsMeta = false
         settings.scrollbackLines = 5000
-        let r = TerminalAppearanceResolver.resolve(settings: settings, tokens: tokens(themeID: "neonBlue"))
+        let r = TerminalAppearanceResolver.resolve(settings: settings, palette: palette(themeID: "neonBlue"))
         #expect(r.cursorShape == .bar)
         #expect(r.cursorBlink == false)
         #expect(r.optionAsMeta == false)
@@ -174,13 +172,13 @@ struct TerminalAppearanceResolverTests {
     func colorOverridesResolve() {
         var settings = TerminalSettings()
         settings.cursorColor = "FF0000"
-        let r = TerminalAppearanceResolver.resolve(settings: settings, tokens: tokens(themeID: "neonBlue"))
+        let r = TerminalAppearanceResolver.resolve(settings: settings, palette: palette(themeID: "neonBlue"))
         #expect(r.cursor == "FF0000")
         #expect(!r.selection.isEmpty)
 
         settings.selectionColor = "00FF00"
         #expect(
-            TerminalAppearanceResolver.resolve(settings: settings, tokens: tokens(themeID: "neonBlue")).selection
+            TerminalAppearanceResolver.resolve(settings: settings, palette: palette(themeID: "neonBlue")).selection
                 == "00FF00")
     }
 
@@ -189,12 +187,12 @@ struct TerminalAppearanceResolverTests {
         var on = TerminalSettings()
         on.sendMouseEventsToApps = true
         #expect(
-            TerminalAppearanceResolver.resolve(settings: on, tokens: tokens(themeID: "neonBlue")).sendMouseEventsToApps
+            TerminalAppearanceResolver.resolve(settings: on, palette: palette(themeID: "neonBlue")).sendMouseEventsToApps
                 == true)
         var off = TerminalSettings()
         off.sendMouseEventsToApps = false
         #expect(
-            TerminalAppearanceResolver.resolve(settings: off, tokens: tokens(themeID: "neonBlue")).sendMouseEventsToApps
+            TerminalAppearanceResolver.resolve(settings: off, palette: palette(themeID: "neonBlue")).sendMouseEventsToApps
                 == false)
     }
 }

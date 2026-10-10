@@ -26,7 +26,7 @@ enum TerminalSettingsCatalog {
     ) -> SettingsGroup {
         let group = root.appending("appearance")
         let s = store.settings
-        let resolved = TerminalAppearanceResolver.resolve(settings: s, tokens: theme.tokens)
+        let resolved = TerminalAppearanceResolver.resolve(settings: s, palette: theme.terminalPalette)
         let size = s.fontSize ?? TerminalAppearanceResolver.defaultFontSize
         return SettingsGroup(
             path: group, title: "Appearance",

@@ -41,7 +41,7 @@ public struct RuneApp: AinkradApp {
     public static func chromeFill(host: HostServices) -> Color? {
         let appearance = TerminalAppearanceResolver.resolve(
             settings: RuneRuntime.settingsStore(for: host).settings,
-            tokens: host.theme.tokens
+            palette: host.theme.terminalPalette
         )
         return Color(hex: appearance.background).opacity(appearance.backgroundOpacity)  // design-lint: allow hex-color user-chosen terminal colour (settings data)
     }

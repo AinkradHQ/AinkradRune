@@ -20,7 +20,7 @@ struct TerminalColorApplyTests {
         var s = TerminalSettings()
         s.colorSchemeID = scheme
         s.backgroundOpacity = opacity
-        return TerminalAppearanceResolver.resolve(settings: s, tokens: tokens(themeID: theme))
+        return TerminalAppearanceResolver.resolve(settings: s, palette: palette(themeID: theme))
     }
 
     private func container(_ a: TerminalRenderAppearance) -> TerminalContainerView {

@@ -13,7 +13,7 @@ struct TerminalAppearanceParityTests {
         s.colorSchemeID = scheme
         s.cursorColor = cursor
         s.selectionColor = selection
-        return TerminalAppearanceResolver.resolve(settings: s, tokens: tokens(themeID: theme))
+        return TerminalAppearanceResolver.resolve(settings: s, palette: palette(themeID: theme))
     }
 
     @Test("Match Theme resolves every host palette to today's full row, with the default selection")
