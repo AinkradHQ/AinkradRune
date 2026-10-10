@@ -168,4 +168,18 @@ final class TerminalSessionFactoryTests {
         #expect(capturedSettingsDefault == .some(configuredDirectory))
         #expect(session.workingDirectory == configuredDirectory)
     }
+
+    @MainActor @Test("a launch's directory wins over the configured working directory")
+    func launchDirectoryWins() {
+        let factory = TerminalSessionFactory(
+            shellResolver: SpyShellResolver(onResolve: { _ in "/bin/zsh" }),
+            workingDirectoryResolver: SpyWorkingDirectoryResolver(onResolve: { _ in
+                WorkingDirectoryResolution(url: URL(fileURLWithPath: "/Users/someone"), rejectedSettingsDefault: false)
+            }),
+            settings: TerminalSettings()
+        )
+        let folder = URL(fileURLWithPath: "/work/app/.claude/worktrees/fix-ci")
+        #expect(factory.makeSession(directory: folder).workingDirectory == folder)
+        #expect(factory.makeSession().workingDirectory == URL(fileURLWithPath: "/Users/someone"))
+    }
 }

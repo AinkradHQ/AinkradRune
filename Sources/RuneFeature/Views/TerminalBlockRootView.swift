@@ -47,11 +47,12 @@ struct TerminalBlockRootView: View {
         .onAppear {
             guard session == nil else { return }
             let launch = takeLaunch()
-            // Only an SSH launch changes how the session STARTS. A document
-            // intent is recognised (so it is not silently eaten) but does not
-            // alter the shell — Rune does not render markdown, Lore does.
+            // An SSH launch changes what runs and a directory launch where it
+            // starts. A document intent is recognised (so it is not silently
+            // eaten) but does not alter the shell — Rune does not render
+            // markdown, Lore does.
             let created = TerminalSessionFactory(settings: settingsStore.settings)
-                .makeSession(launch: launch?.sshPayload)
+                .makeSession(launch: launch?.sshPayload, directory: launch?.directory)
             session = created
             // Reported as soon as the session exists, and BEFORE any
             // notification it could produce: an agent that asks for attention

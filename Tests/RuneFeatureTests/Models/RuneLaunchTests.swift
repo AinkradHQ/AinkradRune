@@ -40,6 +40,23 @@ struct RuneLaunchTests {
         #expect(RuneLaunch.decode(intent.json)?.sshPayload == nil)
     }
 
+    @Test("A directory intent opens the shell there; a missing folder is no launch")
+    func directoryIntent() throws {
+        let folder = FileManager.default.temporaryDirectory
+        let intent = AinkradLaunchIntent(kind: RuneLaunch.openDirectoryKind, path: folder.path)
+        #expect(RuneLaunch.decode(intent.json)?.directory?.standardizedFileURL == folder.standardizedFileURL)
+        #expect(RuneLaunch.decode(intent.json)?.sshPayload == nil)
+
+        let missing = AinkradLaunchIntent(kind: RuneLaunch.openDirectoryKind, path: "/no/such/folder-\(UUID())")
+        #expect(RuneLaunch.decode(missing.json) == nil)
+
+        let file = folder.appendingPathComponent("rune-launch-\(UUID()).txt")
+        try "x".write(to: file, atomically: true, encoding: .utf8)
+        defer { try? FileManager.default.removeItem(at: file) }
+        let notAFolder = AinkradLaunchIntent(kind: RuneLaunch.openDirectoryKind, path: file.path)
+        #expect(RuneLaunch.decode(notAFolder.json) == nil)
+    }
+
     @Test("Nothing pending is nil, not a launch")
     func nothingPendingIsNil() {
         #expect(RuneLaunch.decode(nil) == nil)
