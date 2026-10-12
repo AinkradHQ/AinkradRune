@@ -26,6 +26,11 @@ import SwiftUI
 struct RuneBasicView: View {
     let settingsStore: TerminalSettingsStore
     let theme: HostTheme
+    /// Another app's launch (Grimoire's "Terminal" sends a folder): basic mode must read it too, or the
+    /// folder is dropped and commands run wherever the settings say (E0 GD4).
+    var takeLaunch: () -> RuneLaunch? = { nil }
+    @State private var directory: URL?
+    @FocusState private var commandFocused: Bool
 
     @State private var command = ""
     @State private var buffer = AinkradLogBuffer()
@@ -48,6 +53,7 @@ struct RuneBasicView: View {
                     text: $command,
                     placeholder: "Command — your shell, without its startup files"
                 )
+                .focused($commandFocused)
                 .onSubmit { run() }
                 .disabled(isRunning)
                 AinkradLogView(
@@ -60,11 +66,17 @@ struct RuneBasicView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+        .task {
+            if let launched = takeLaunch()?.directory { directory = launched }
+            // A turn later: on appear the field is not in the window yet, and focus fell to the first key view
+            // (the host's title-bar bell under Full Keyboard Access) — the same fix as Forge's palette (E0 GD4).
+            DispatchQueue.main.async { commandFocused = true }
+        }
     }
 
     private var subtitle: String {
         if isRunning { return "running…" }
-        guard let lastExitCode else { return "no shell startup" }
+        guard let lastExitCode else { return directory.map { "in \($0.lastPathComponent) · no shell startup" } ?? "no shell startup" }
         return lastExitCode == 0 ? "exit 0" : "exit \(lastExitCode)"
     }
 
@@ -96,7 +108,7 @@ struct RuneBasicView: View {
         // interactive rc files.
         process.executableURL = URL(fileURLWithPath: resolved.shellPath)
         process.arguments = ["-c", trimmed]
-        process.currentDirectoryURL = resolved.workingDirectory
+        process.currentDirectoryURL = directory ?? resolved.workingDirectory
 
         let out = Pipe()
         let err = Pipe()

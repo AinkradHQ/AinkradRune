@@ -81,7 +81,8 @@ extension RuneApp: AinkradAppModes {
             return AnyView(
                 RuneBasicView(
                     settingsStore: RuneRuntime.settingsStore(for: host),
-                    theme: host.theme))
+                    theme: host.theme,
+                    takeLaunch: { RuneLaunch.decode(host.apps.takePendingLaunch()) }))
         case .advanced:
             return advancedRootView(host: host)
         // Resilient enum: fall back to advanced, never to a stripped view for a
